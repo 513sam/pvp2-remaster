@@ -1,0 +1,302 @@
+variables:
+	{ench_sample} = 0
+	{pow_ench} = 0
+
+command /pvp [<text>] [<text>] [<player>]:
+	trigger:
+		if arg 2 is not set:
+			if arg 1 is "setting":
+				if arg 3 is not set:
+					execute console command "/gamerule commandBlockOutput false"
+					execute console command "/gamerule sendCommandFeedback false"
+					execute console command "/scoreboard objectives remove health"
+					execute console command "/scoreboard objectives add health health"
+					execute console command "/scoreboard objectives setdisplay list health"
+					execute console command "/gamerule naturalRegeneration false"
+					execute console command "/team remove red"
+					execute console command "/team remove blue"
+					execute console command "/team add red"
+					execute console command "/team add blue"
+					execute console command "/team modify red friendlyFire false"
+					execute console command "/team modify blue friendlyFire false"
+					execute console command "/team modify red color red"
+					execute console command "/team modify blue color blue"
+					execute console command "/team modify red nametagVisibility hideForOtherTeams"
+					execute console command "/team modify blue nametagVisibility hideForOtherTeams"
+					execute console command "/gamemode adventure @a[gamemode=adventure]"
+					execute console command "/clear @a[gamemode=adventure]"
+					execute console command "/tp @a[gamemode=adventure] -5 4 -161"
+					execute console command "/spawnpoint @a[gamemode=adventure] -5 4 -161"
+					execute console command "/kill @a[gamemode=adventure]"
+					loop all players:
+						set {red.%loop-player%} to false
+						set {blue.%loop-player%} to false
+						set {pvp돈.%loop-player%} to 0
+						set {준비.%loop-player%} to false
+						set {힘인첸트.%loop-player%} to 0
+						set {추가체력스텟.%loop-player%} to 0
+					set {게임진행} to false
+					set {pvp게임진행} to false
+					set {blue팀원수} to 0
+					set {red팀원수} to 0
+					set {red생존수} to 0
+					set {blue생존수} to 0
+					set {red팀점수} to 0
+					set {blue팀점수} to 0
+					set {레드팀준비} to false
+					set {블루팀준비} to false
+					set {연패.red} to 0
+					set {연패.blue} to 0
+					set {blue받아야할코인} to 0
+					set {red받아야할코인} to 0
+					set {패배보상배율.red} to 0
+					set {패배보상배율.blue} to 0
+					
+					message "설정하였습니다" to all players
+					stop
+			if arg 1 is "stop":
+				if arg 3 is not set:
+					set {pvp게임진행} to false
+					execute console command "/gamemode adventure @a[team=red,team=blue]"
+					execute console command "/tp @a[team=red] -8 4 -134"
+					execute console command "/tp @a[team=blue] -8 4 -61"
+		if arg 2 is set:
+			if arg 1 is "join":
+				if arg 3 is set:
+					if arg 2 is "red":
+						if {red.%arg 3%} is false:
+							execute console command "/clear %arg 3%"
+							execute console command "/give %arg 3% minecraft:wooden_sword{Unbreakable:1b} 1"
+							execute console command "/spawnpoint %arg 3% -8 4 -134"
+							execute console command "/tp %arg 3% -8 4 -134"
+							if {blue.%arg 3%} is true:
+								execute console command "/team join red %arg 3%"
+								set {red.%arg 3%} to true
+								set {blue.%arg 3%} to false
+								subtract 1 from {blue팀원수}
+								add 1 to {red팀원수}
+								message "참가하였습니다."
+								stop
+							if {blue.%arg 3%} is false:
+								execute console command "/team join red %arg 3%"
+								set {red.%arg 3%} to true
+								set {blue.%arg 3%} to false
+								add 1 to {red팀원수}
+								message "참가하였습니다."
+								stop
+						if {red.%arg 3%} is true:
+							message "이미 참가하였습니다"
+							stop
+					if arg 2 is "blue":
+						if {blue.%arg 3%} is false:
+							execute console command "/clear %arg 3%"
+							execute console command "/give %arg 3% minecraft:wooden_sword{Unbreakable:1b} 1"
+							execute console command "/spawnpoint %arg 3% -8 4 -61"
+							execute console command "/tp %arg 3% -8 4 -61"
+							if {red.%arg 3%} is false:
+								execute console command "/team join blue %arg 3%"
+								set {blue.%arg 3%} to true
+								set {red.%arg 3%} to false
+								add 1 to {blue팀원수}
+								message "참가하였습니다."
+								stop
+							if {red.%arg 3%} is true:
+								execute console command "/team join blue %arg 3%"
+								set {blue.%arg 3%} to true
+								set {red.%arg 3%} to false
+								subtract 1 from {red팀원수}
+								add 1 to {blue팀원수}
+								message "참가하였습니다."
+								stop
+						if {blue.%arg 3%} is true:
+							message "이미 참가하였습니다"
+							stop
+				if arg 3 is not set:
+					if arg 2 is "red":
+						if {red.%player%} is false:
+							execute console command "/clear %player%"
+							execute console command "/give %player% minecraft:wooden_sword{Unbreakable:1b} 1"
+							execute console command "/spawnpoint %player% -8 4 -134"
+							execute console command "/tp %%player%% -8 4 -134"
+							if {blue.%player%} is true:
+								execute console command "/team join red %player%"
+								set {red.%player%} to true
+								set {blue.%player%} to false
+								subtract 1 from {blue팀원수}
+								add 1 to {red팀원수}
+								message "참가하였습니다."
+								stop
+							if {blue.%player%} is false:
+								execute console command "/team join red %player%"
+								set {red.%player%} to true
+								set {blue.%player%} to false
+								add 1 to {red팀원수}
+								message "참가하였습니다."
+								stop
+						if {red.%player%} is true:
+							message "이미 참가하였습니다"	
+							stop
+					if arg 2 is "blue":
+						if {blue.%player%} is false:
+							execute console command "/clear %player%"
+							execute console command "/give %player% minecraft:wooden_sword{Unbreakable:1b} 1"
+							execute console command "/spawnpoint %player% -8 4 -61"
+							execute console command "/tp %%player%% -8 4 -61"
+							if {red.%player%} is true:
+								execute console command "/team join blue %player%"
+								set {blue.%player%} to true
+								set {red.%player%} to false
+								subtract 1 from {red팀원수}
+								add 1 to {blue팀원수}
+								message "참가하였습니다."
+								stop
+							if {red.%player%} is false:
+								execute console command "/team join blue %player%"
+								set {blue.%player%} to true
+								set {red.%player%} to false
+								add 1 to {blue팀원수}
+								message "참가하였습니다."
+								stop
+						if {blue.%player%} is true:
+							message "이미 참가하였습니다"
+							stop
+			if arg 1 is "ready":
+				if arg 2 is "red":
+					if {레드팀준비} is false:
+						set {red생존수} to {red팀원수}
+						set {레드팀준비} to true
+						send title "레드팀이 준비되었습니다" to all players for 1 seconds
+						stop
+					if {레드팀준비} is true:
+						stop
+				if arg 2 is "blue":
+					if {블루팀준비} is false:
+						set {블루팀준비} to true
+						set {blue생존수} to {blue팀원수}
+						send title "블루팀이 준비되었습니다" to all players for 1 seconds
+						stop
+					if {블루팀준비} is true:
+						stop
+						
+every 1 seconds:
+	if {게임진행} is true:
+		set {red준비수} to 0
+		set {blue준비수} to 0
+		loop all players:
+			if {red.%loop-player%} is true:
+				if {준비.%loop-player%} is true:
+					add 1 to {red준비수}
+			if {blue.%loop-player%} is true:
+				if {준비.%loop-player%} is true:
+					add 1 to {blue준비수}
+		if {red준비수} = {red팀원수}:
+			set {레드팀준비} to true
+			loop all players:
+				if {red.%loop-player%} is true:
+					set {준비.%loop-player%} to false
+		if {blue준비수} = {blue팀원수}:
+			set {블루팀준비} to true
+			loop all players:
+				if {blue.%loop-player%} is true:
+					set {준비.%loop-player%} to false
+
+
+
+
+
+every 1 seconds:
+	if {게임진행} is true:
+		if {레드팀준비} is true:
+			if {블루팀준비} is true:
+				set {red생존수} to {red팀원수}
+				set {blue생존수} to {blue팀원수}
+				set {레드팀준비} to false
+				set {블루팀준비} to false
+				execute console command "/tp @a[team=red] -8 4 -128"
+				execute console command "/tp @a[team=blue] -8 4 -67"
+				set {무적시간} to true
+				send title "3" to all players
+				wait 1 seconds
+				send title "2" to all players
+				wait 1 seconds
+				send title "1" to all players
+				wait 1 seconds
+				set {무적시간} to false
+				send title "게임시작!" to all players
+				set {pvp게임진행} to true
+				
+on damage:
+	if {무적시간} is true:
+		cancel event
+
+on death:
+	if victim is player:
+		if {pvp게임진행} is true:
+			if {red.%victim%} is true:
+				if {red생존수} is above or equal to 1:
+					subtract 1 from {red생존수}
+					execute console command "/gamemode spectator %victim%"
+					add 30 to {pvp돈.%attacker%}
+					if {red생존수} is 0:
+						set {연패.blue} to 0
+						add 1 to {연패.red}
+						add 1 to {blue팀점수}
+						set {패배보상배율.red} to 1 + 0.2 * {연패.red}
+						set {blue받아야할코인} to {blue생존수} * 20
+						loop all players:
+							if {blue.%loop-player%} is true:
+								add {blue받아야할코인} to {pvp돈.%loop-player%}
+							if {red.%loop-player%} is true:
+								add round(19 * {패배보상배율.red}) to {pvp돈.%loop-player%}
+						send title "&1 블루팀 승리" to all players
+						execute console command "/pvp stop"
+						execute console command "/gamemode adventure @a[team=red]"
+						execute console command "/gamemode adventure @a[team=blue]"
+						execute console command "/kill @e[type=arrow]"
+						stop
+					stop
+			if {blue.%victim%} is true:
+				if {blue생존수} is above or equal to 1:
+					subtract 1 from {blue생존수}
+					execute console command "/gamemode spectator %victim%"
+					add 30 to {pvp돈.%attacker%}
+					if {blue생존수} is 0:
+						set {연패.red} to 0
+						add 1 to {연패.blue}
+						add 1 to {red팀점수}
+						set {패배보상배율.blue} to 1 + 0.1 * {연패.blue}
+						set {red받아야할코인} to {red생존수} * 20
+						loop all players:
+							if {red.%loop-player%} is true:
+								add {red받아야할코인} to {pvp돈.%loop-player%}
+							if {blue.%loop-player%} is true:
+								add round(19 * {패배보상배율.blue}) to {pvp돈.%loop-player%}
+						send title "&4 레드팀 승리" to all players
+						execute console command "/pvp stop"
+						execute console command "/gamemode adventure @a[team=red]"
+						execute console command "/gamemode adventure @a[team=blue]"
+						execute console command "/kill @e[type=arrow]"
+						stop
+
+
+
+command /준비:
+	trigger:
+		if {준비.%event-player%} is false:
+			set {준비.%event-player%} to true
+			message "준비완료" to player
+			stop
+		if {준비.%event-player%} is true:
+			set {준비.%event-player%} to false
+			message "준비 취소 되었습니다" to player
+			stop
+			
+			
+
+			
+
+on break:
+	if {게임진행} is true:
+		cancel event
+
+
