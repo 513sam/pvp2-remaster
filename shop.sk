@@ -171,7 +171,7 @@ command /upgradebow:
 		if {bool_bow.%event-player%} is true:
 			if {pvp돈.%event-player%} >= {price.bow_upgrade_%{pow_ench.%event-player%}%}:
 				subtract {price.bow_buy} from {pvp돈.%event-player%}
-				execute player command "/clear %event-player%"
+				execute player command "/clear %event-player% bow"
 				execute player command "/give %event-player% bow{display:{Name:'[{""text"":""활"",""bold"":true},{""text"":""(+%{pow_ench.%event-player%}%)"",""color"":""light_purple"",""bold"":true}]'},Enchantments:[{id:""minecraft:power"",lvl:%{pow_ench.%event-player%}%s}]} 1"
 				add 1 to {pow_ench.%event-player%}
 				close event-player's inventory
