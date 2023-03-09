@@ -35,6 +35,8 @@ command /pvp [<text>] [<text>] [<player>]:
 						set {준비.%loop-player%} to false
 						set {힘인첸트.%loop-player%} to 0
 						set {추가체력스텟.%loop-player%} to 0
+						set {bool_bow.%loop-player%} to false
+						set {healthlvl.%loop-player%} to 0
 					set {게임진행} to false
 					set {pvp게임진행} to false
 					set {blue팀원수} to 0
@@ -236,18 +238,18 @@ on death:
 				if {red생존수} is above or equal to 1:
 					subtract 1 from {red생존수}
 					execute console command "/gamemode spectator %victim%"
-					add 30 to {pvp돈.%attacker%}
+					add 3000 to {pvp돈.%attacker%}
 					if {red생존수} is 0:
 						set {연패.blue} to 0
 						add 1 to {연패.red}
 						add 1 to {blue팀점수}
 						set {패배보상배율.red} to 1 + 0.2 * {연패.red}
-						set {blue받아야할코인} to {blue생존수} * 20
+						set {blue받아야할코인} to {blue생존수} * 2000
 						loop all players:
 							if {blue.%loop-player%} is true:
 								add {blue받아야할코인} to {pvp돈.%loop-player%}
 							if {red.%loop-player%} is true:
-								add round(19 * {패배보상배율.red}) to {pvp돈.%loop-player%}
+								add round(1900 * {패배보상배율.red}) to {pvp돈.%loop-player%}
 						send title "&1 블루팀 승리" to all players
 						execute console command "/pvp stop"
 						execute console command "/gamemode adventure @a[team=red]"
@@ -259,7 +261,7 @@ on death:
 				if {blue생존수} is above or equal to 1:
 					subtract 1 from {blue생존수}
 					execute console command "/gamemode spectator %victim%"
-					add 30 to {pvp돈.%attacker%}
+					add 3000 to {pvp돈.%attacker%}
 					if {blue생존수} is 0:
 						set {연패.red} to 0
 						add 1 to {연패.blue}
@@ -270,7 +272,7 @@ on death:
 							if {red.%loop-player%} is true:
 								add {red받아야할코인} to {pvp돈.%loop-player%}
 							if {blue.%loop-player%} is true:
-								add round(19 * {패배보상배율.blue}) to {pvp돈.%loop-player%}
+								add round(1900 * {패배보상배율.blue}) to {pvp돈.%loop-player%}
 						send title "&4 레드팀 승리" to all players
 						execute console command "/pvp stop"
 						execute console command "/gamemode adventure @a[team=red]"
@@ -293,10 +295,5 @@ command /준비:
 			
 			
 
-			
-
-on break:
-	if {게임진행} is true:
-		cancel event
 
 

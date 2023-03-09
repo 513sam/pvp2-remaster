@@ -1,3 +1,41 @@
 every 0.5 seconds:
     loop all players:
         execute console command "/attribute %loop-player% minecraft:generic.max_health base set %{추가체력스텟.%loop-player%} + 20%"
+
+
+on drop:
+	if {게임진행} is true:
+		cancel event
+			
+
+on break:
+	if {게임진행} is true:
+		cancel event
+
+
+
+
+command /price [<text>] [<text>] [<text>] [<integer>] [<integer>]:
+	trigger:
+		if arg 1 is set:
+			if arg 2 is not set:
+				if arg 1 is "list":
+					message "" to player
+			if arg 2 is set:
+				if arg 1 is "set":
+					if arg 2 is "normal":
+						set {price.%arg 3%} to arg 4
+						message "%arg 3%의 가격이 %{price.%arg 3%}%원 으로 변경되었습니다" to player
+					if arg 2 is "upgrade":
+						set {price.%arg 3%_upgrade_%arg 4%} to arg 5
+						message "%arg 3%의 %arg 4%단계에서 %arg 4 + 1%에 가기위한 가격이 %{price.%arg 3%_upgrade_%arg 4%}%원 으로 변경되었습니다" to player
+		if arg 1 is not set:
+			message "/price list : 가격표 확인" to player 
+			message "/price set normal [아이템이름] [설정할가격] : 일반 아이템 가격 번경" to player
+			message "/price set upgrade [bow/sword/armor/stat] [단계] [설정할가격] : 업그레이드 가격변경" to player
+
+
+
+
+
+

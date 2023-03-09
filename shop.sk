@@ -1,0 +1,185 @@
+		
+			
+command /상점:
+	trigger:
+		if {pvp게임진행} is true:
+			message "&4게임진행중에는 상점을 열수 없습니다."
+		if {pvp게임진행} is false:
+			set {상점이용중.%player%} to true
+			open chest with 3 rows named "상점메뉴" to player
+			format slot 4 of player with barrier named "나가기" to close
+			set slot 10 of current inventory of player to shiny iron sword named "&l검 업그레이드" with lore "&l&e검을 업그레이드 할수 있는 상점입니다"
+			set slot 11 of current inventory of player to shiny bow named "&l활 업그레이드" with lore "&l&e활을 업그레이드 할수 있는 상점입니다"
+			set slot 12 of current inventory of player to shiny golden apple named "&l소모품 상점" with lore "&l&e소모품을 구매할수있는 상점입니다"
+			set slot 13 of current inventory of player to iron chestplate named "&l갑옷 상점" with lore "&l&e갑옷을 구매할수있는 상점입니다"
+			set slot 14 of current inventory of player to shiny writable book named "&l스킬 상점" with lore "&l&e스킬을 구매할수있는 상점입니다"
+			set slot 15 of current inventory of player to experience bottle named "&l스탯 업그레이드" with lore "&l&e스탯을 업그레이드 할수있는 상점입니다"
+			set slot 16 of current inventory of player to end crystal named "&l스패셜 상점" with lore "&l&e특수한 것을 구매할수있는 상점입니다"
+			set slot 22 of current inventory of player to gold ingot named "&l&b현재 돈" with lore "&l&a잔액 : %{pvp돈.%event-player%}%"
+
+
+command /buy [<text>] [<integer>] [<player>]:
+	trigger:
+		if {price.%arg 1%} <= {pvp돈.%arg 3%}:
+			if {buylimit.%arg 1%} <= {buystack.%arg 1%.%arg 3%}:
+				message "cancel event" to arg 3
+			if {buylimit.%arg 1%} > {buystack.%arg 1%.%arg 3%}:
+				message "purchase" to arg 3
+				add 1 to {buystack.%arg 1%.%arg 3%}
+				
+				subtract {price.%arg 1%} * arg 2 from {pvp돈.%arg 3%}
+		if {price.%arg 1%} > {pvp돈.%arg 3%}:
+			message "돈이 부족합니다"
+
+
+
+
+
+command /shop [<text>]:
+	trigger:
+		if arg 1 is "sword":
+			set {상점이용중.%event-player%} to true
+			open chest with 3 rows named "검 업그레이드 상점" to player
+			set slot 10 of current inventory of player to iron sword named "&l검 업그레이드" with lore "&l&e검을 업그레이드 할수 있는 상점입니다"
+		if arg 1 is "bow":
+			if {bool_bow.%event-player%} is false:
+				open chest with 3 rows named "활구매" to player
+				set slot 13 of current inventory of player to bow named "&l활 구매" with lore "&l&e비용 : %{price.bow}%"
+			if {bool_bow.%event-player%} is true:
+				set {pow_ench.%event-player%} to ("%{pow_ench.%event-player%}%" parsed as number)
+				set {ench_sample.%event-player%} to ("%{pow_ench.%event-player%} + 1%" parsed as number)
+				set {상점이용중.%event-player%} to true
+				open chest with 3 rows named "활 업그레이드 상점" to player
+				set slot 0,1,2,3,4,9,13,18,19,20,21 and 22 of current inventory of player to glass pane named " "
+				set slot 6,7,8,15,17,24,25 and 26 of current inventory of player to black stained glass pane named " "
+				if {pow_ench.%event-player%} is 0:
+					set slot 10 of current inventory of player to ("bow" parsed as item) named "&l활 &d(+%{pow_ench.%event-player%}%)"
+				if {pow_ench.%event-player%} > 0:
+					set slot 10 of current inventory of player to ("bow of power %{pow_ench.%event-player%}%" parsed as item) named "&l활 &d(+%{pow_ench.%event-player%}%)"
+				set slot 11 of current inventory of player to nether star named " "	
+				set slot 12 of current inventory of player to enchanted book of power 1 named "추가 인첸트"
+				set slot 16 of current inventory of player to ("bow of power %{ench_sample.%event-player%}%" parsed as item) named "&l활 &d(+%{ench_sample.%event-player%}%)"
+				set slot 14 of current inventory of player to anvil named "&l강화" with lore "&l&b강화비용 : %{price.bow_upgrade_%{pow_ench.%event-player%}%}%"
+		if arg 1 is "usable":
+			open chest with 3 rows named "&l소모품상점" to player
+			set slot 11 of current inventory of player to shiny water bottle named "&l물약" with lore "&l&e전투에 필요한 물약등을 구매할수 있습니다."
+			set slot 13 of current inventory of player to arrow named "&l화살" with lore "&l&e여러 종류의 화살을 구입할수 있습니다."
+			set slot 15 of current inventory of player to enchanted golden apple named "&l도구" with lore "&l&e전투에 도움이 되는 아이템들을 구매하실수 있습니다."
+		if arg 1 is "tool":
+			open chest with 5 rows named "도구상점" to player
+			set slot 10 of current inventory of player to enchanted golden apple named "&l보라색 황금사과" with lore "&l&e비용 : %{price.enchanted_golden_apple}%" and "구매재한 : %{buylimit.enchanted_golden_apple}%"	
+			set slot 12 of current inventory of player to honey bottle named "&l꿀이든 병" with lore "&l&e비용 : %{price.honey_bottle}%"
+			set slot 14 of current inventory of player to milk bucket named "&l우유 양동이" with lore "&l&e비용 : %{price.milk_bucket}%"
+			set slot 16 of current inventory of player to ender pearl named "&l&e앤더 진주" with lore "&l&e비용 : %{price.milk_bucket}%"
+			set slot 28 of current inventory of player to golden apple named "&l황금사과" with lore "&l&e비용 : %{price.golden_apple}%" and "&l&e구매재한 : %{buylimit.golden_apple}%"
+			set slot 30 of current inventory of player to goat horn named "&l염소뿔" with lore "&l&e비용 : %{price.goat_horn}%"
+			set slot 32 of current inventory of player to powder snow bucket named "&l가루눈 양동이" with lore "&l&e비용 : %{price.powder_snow_bucket}%" and "&l&e불을 끌때 사용하세요!"
+			set slot 34 of current inventory of player to spyglass named "&l망원경" with lore "&l&e비용 : %{price.spyglass}%"
+		if arg 1 is "arrow":
+			#화살을 클릭했을때
+			#상자열리면서 화살 11번 발광화살 13번 행운화살 15번 생성
+			open chest with 3 rows named "화살" to player
+			set slot 11 of current inventory of player to arrow named "&l기본화살" with lore "&l&7평범한 화살입니다." and "&l&e비용 : %{price.arrow}%"
+			set slot 13 of current inventory of player to spectral arrow named "&l발광화살" with lore "&l&e발광 화살입니다." and "&l&e비용 : %{price.spectral_arrow}%"
+			set slot 15 of current inventory of player to tipped arrow of luck named "&l행운화살" with lore "&l&a행운 화살입니다." and "&l&e비용 : %{price.tipped_arrow_of_luck}%"
+		if arg 1 is "potion":
+			#힘 상승 그대신 위더: 분노의 영약, 재생: 체력 물약, 흡수 그대신 구속: 강철의 영약, 신속 그대신 나약함: 속도의 물약
+			open chest with 5 rows named "물약" to player
+			set slot 10 of current inventory of player to potion of strength named "&l분노의 영약" with lore "&l&4분노의 영약입니다." and "&l&4공격력이 증가하지만" and "&l&8그에따른 대가(위더)를 받습니다" and "&l&b비용 : %{price.potion_of_strength}%"
+			set slot 12 of current inventory of player to potion of healing named "&l재생 물약" with lore "&l&d체력 물약입니다." and "&1&d체력을 재생할수있는 물약입니다" and "&l&b비용 : %{price.potion_of_health}%"
+			set slot 14 of current inventory of player to potion of fire resistance named "&l강철의 영약" with lore "&l&7강철의 영약입니다." and "&l&7흡수효과를 얻습니다" and "&l&8그러나 속도가 느려집니다." and "&l&b비용 : %{price.potion_of_fire_resistance}%"
+			set slot 16 of current inventory of player to potion of swiftness named "&l속도의 물약" with lore "&l&b속도의 물약입니다." and "&l&b속도가 빨라집니다" and "&l&8그러나 공격력이 낮아집니다." and "&l&b비용 : %{price.potion_of_swiftness}%"
+		if arg 1 is "stat":
+			open chest with 3 rows named "스탯 업그레이드" to player
+			set slot 11 of current inventory of player to apple named "&l&c체력" with lore "&l&a현재 체력 스텟 : %{health_lvl.%event-player%}%" and "&l&e비용 : %{price.healthupgrade%{health_lvl.%event-player%}%}%"
+			set slot 15 of current inventory of player to shiny writable book named "&l&f지혜" with lore "&l&a현재 지혜 스텟 : %{wisdom_lvl.%event-player%}%" and "&l&e비용 : %{price.wisdomupgrade%{wisdom_lvl.%event-player%}%}%"
+
+
+on inventory click:
+	if inventory name of current inventory of player contains "업그레이드":
+		cancel event
+		if clicked item's name is " ":
+	if inventory name of current inventory of player contains "물약":
+		cancel event
+
+	if inventory name of current inventory of player contains "도구":
+		cancel event
+
+	if inventory name of current inventory of player contains "화살":
+		cancel event
+	if inventory name of current inventory of player contains "메뉴":
+		cancel event
+	if inventory name of current inventory of player contains "소모품":
+		cancel event
+	if inventory name of current inventory of player contains "활 업그레이드 상점":
+		cancel event
+		if clicked item's name contains "강화":
+			close player's inventory
+			execute player command "/shop"
+
+
+
+on inventory close:
+	set {상점이용중.%player%} to false
+
+
+		
+on inventory click:
+	if inventory name of current inventory of player contains "상점메뉴":
+		cancel event
+		if clicked item's name contains "검 업그레이드":
+			close player's inventory
+			execute player command "/shop sword"
+		if clicked item's name contains "활 업그레이드":
+			close player's inventory
+			execute player command "/shop bow"
+		if clicked item's name contains "&l소모품 상점":
+			close player's inventory
+			execute player command "/shop usable"
+		if clicked item's name contains "스탯 업그레이드":
+			close player's inventory
+			execute player command "/shop stat"		
+
+on inventory click:
+	if name of current inventory of player contains "&l소모품상점":
+		cancel event
+		if clicked item's name contains "&l물약":
+			close player's inventory
+			execute player command "/shop potion"
+		if clicked item's name contains "&l화살":
+			close player's inventory
+			execute player command "/shop arrow"
+		if clicked item's name contains "&l도구":
+			close player's inventory
+			execute player command "/shop tool"
+
+
+
+
+command /upgradebow:
+	trigger:
+		if {bool_bow.%event-player%} is false:
+			if {pvp돈.%event-player%} >= {price.bow_buy}:
+				subtract {price.bow_buy} from {pvp돈.%event-player%}
+				execute player command "/give %event-player% bow{Unbreakable:1b} 1"
+				close event-player's inventory
+				message "&l&e구매하였습니다" to player
+				set {bool_bow.%event-player%} to true
+				execute player command "/shop bow"
+			if {pvp돈.%event-player%} < {price.bow_buy}:
+				message "&l&a돈이 부족합니다" to player
+		if {bool_bow.%event-player%} is true:
+			if {pvp돈.%event-player%} >= {price.bow_upgrade_%{pow_ench.%event-player%}%}:
+				subtract {price.bow_buy} from {pvp돈.%event-player%}
+				execute player command "/clear %event-player%"
+				execute player command "/give %event-player% bow{display:{Name:'[{""text"":""활"",""bold"":true},{""text"":""(+%{pow_ench.%event-player%}%)"",""color"":""light_purple"",""bold"":true}]'},Enchantments:[{id:""minecraft:power"",lvl:%{pow_ench.%event-player%}%s}]} 1"
+				add 1 to {pow_ench.%event-player%}
+				close event-player's inventory
+				message "&l&e업드레이드하였습니다" to player
+				execute player command "/shop bow"
+			if {pvp돈.%event-player%} < {price.bow_upgrade_%{pow_ench.%event-player%}%}:
+				message "&l&a돈이 부족합니다" to player
+
+set {bool_bow.%event-player%} to false
+set {pvp돈.%event-player%} to 0
+set {pow_ench.%event-player%} to 0
