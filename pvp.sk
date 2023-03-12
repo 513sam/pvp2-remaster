@@ -7,6 +7,7 @@ command /pvp [<text>] [<text>] [<player>]:
 		if arg 2 is not set:
 			if arg 1 is "setting":
 				if arg 3 is not set:
+					execute console command "/gamerule doImmediateRespawn true"
 					execute console command "/gamerule commandBlockOutput false"
 					execute console command "/gamerule sendCommandFeedback false"
 					execute console command "/scoreboard objectives remove health"
@@ -29,6 +30,7 @@ command /pvp [<text>] [<text>] [<player>]:
 					execute console command "/spawnpoint @a[gamemode=adventure] -5 4 -161"
 					execute console command "/kill @a[gamemode=adventure]"
 					loop all players:
+						set {상점이용중.%player%} to false
 						set {red.%loop-player%} to false
 						set {blue.%loop-player%} to false
 						set {pvp돈.%loop-player%} to 0
@@ -36,7 +38,16 @@ command /pvp [<text>] [<text>] [<player>]:
 						set {힘인첸트.%loop-player%} to 0
 						set {추가체력스텟.%loop-player%} to 0
 						set {bool_bow.%loop-player%} to false
-						set {healthlvl.%loop-player%} to 0
+						set {stat_health.%loop-player%} to 0
+						set {stat_strength.%loop-player%} to 0
+						set {pow_ench.%loop-player%} to 0
+						set {buystack.enchanted_golden_apple.%loop-player%} to 0
+						set {sword_upgrade_lvl.%loop-player%} to 0
+						set {sword_upgrade.%loop-player%} to "wooden_sword"
+						set {stat_health.%loop-player%} to 0
+						set {stat_strength.%loop-player%} to 0
+
+					set {buylimit.enchanted_golden_apple} to 5
 					set {게임진행} to false
 					set {pvp게임진행} to false
 					set {blue팀원수} to 0
@@ -267,7 +278,7 @@ on death:
 						add 1 to {연패.blue}
 						add 1 to {red팀점수}
 						set {패배보상배율.blue} to 1 + 0.1 * {연패.blue}
-						set {red받아야할코인} to {red생존수} * 20
+						set {red받아야할코인} to {red생존수} * 2000
 						loop all players:
 							if {red.%loop-player%} is true:
 								add {red받아야할코인} to {pvp돈.%loop-player%}
