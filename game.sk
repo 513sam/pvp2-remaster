@@ -1,7 +1,13 @@
 every 0.5 seconds:
-    loop all players:
-        execute console command "/attribute %loop-player% minecraft:generic.max_health base set %{추가체력스텟.%loop-player%} + 20%"
+	loop all players:
+		set {stat_health.%loop-player%} to ("%{stat_health.%loop-player%}%" parsed as number)
+		execute console command "/attribute %loop-player% minecraft:generic.max_health base set %{stat_health.%loop-player%} + 20%"
 
+
+on damage of player:
+	if attacker is player:
+		set damage to damage * (1 + 0.05 * {stat_strength.%attacker%})
+	
 
 on drop:
 	if {게임진행} is true:
@@ -12,6 +18,15 @@ on break:
 	if {게임진행} is true:
 		cancel event
 
+on consume of enchanted golden apple:
+	cancel event
+	execute console command "/clear %event-player% enchanted_golden_apple 1"
+	execute console command "/effect give %event-player% regeneration 10 4"
+	execute console command "/effect give %event-player% absorption 90 0"
+	execute console command "/effect give %event-player% resistance 180 0"
+	execute console command "/effect give %event-player% fire_resistance 180 0"
+
+
 
 
 
@@ -21,6 +36,12 @@ command /price [<text>] [<text>] [<text>] [<integer>] [<integer>]:
 			if arg 2 is not set:
 				if arg 1 is "list":
 					message "" to player
+					execute console command "/give %event-player% written_book{pages:['{""text"":""wood 0 :%{price.wooden_sword_upgrade_0}%\\nwood 1 :%{price.wooden_sword_upgrade_1}%\\nwood 2 :%{price.wooden_sword_upgrade_2}%\\nwood 3 :%{price.wooden_sword_upgrade_3}%\\nwood 4 :%{price.wooden_sword_upgrade_4}%\\nwood 5 :%{price.wooden_sword_upgrade_5}%\\nwood 6 :%{price.wooden_sword_upgrade_6}%\\nwood 7 :%{price.wooden_sword_upgrade_7}%\\nwood 8 :%{price.wooden_sword_upgrade_8}%\\nwood 9 :%{price.wooden_sword_upgrade_9}%\\nwood 10 :%{price.wooden_sword_upgrade_10}%\\nwood 11 :%{price.wooden_sword_upgrade_11}%\\nwood 12 :%{price.wooden_sword_upgrade_12}%""}'],title:""wooden_sword_upgrade"",author:""513sam""}"
+					execute console command "/give %event-player% written_book{pages:['{""text"":""stone 0 :%{price.stone_sword_upgrade_0}%\\nstone 1 :%{price.stone_sword_upgrade_1}%\\nstone 2 :%{price.stone_sword_upgrade_2}%\\nstone 3 :%{price.stone_sword_upgrade_3}%\\nstone 4 :%{price.stone_sword_upgrade_4}%\\nstone 5 :%{price.stone_sword_upgrade_5}%\\nstone 6 :%{price.stone_sword_upgrade_6}%\\nstone 7 :%{price.stone_sword_upgrade_7}%\\nstone 8 :%{price.stone_sword_upgrade_8}%\\nstone 9 :%{price.stone_sword_upgrade_9}%\\nstone 10 :%{price.stone_sword_upgrade_10}%\\nstone 11 :%{price.stone_sword_upgrade_11}%\\nstone 12 :%{price.stone_sword_upgrade_12}%""}'],title:""stone_sword_upgrade"",author:""513sam""}"
+					execute console command "/give %event-player% written_book{pages:['{""text"":""iron 0 :%{price.iron_sword_upgrade_0}%\\niron 1 :%{price.iron_sword_upgrade_1}%\\niron 2 :%{price.iron_sword_upgrade_2}%\\niron 3 :%{price.iron_sword_upgrade_3}%\\niron 4 :%{price.iron_sword_upgrade_4}%\\niron 5 :%{price.iron_sword_upgrade_5}%\\niron 6 :%{price.iron_sword_upgrade_6}%\\niron 7 :%{price.iron_sword_upgrade_7}%\\niron 8 :%{price.iron_sword_upgrade_8}%\\niron 9 :%{price.iron_sword_upgrade_9}%\\niron 10 :%{price.iron_sword_upgrade_10}%\\niron 11 :%{price.iron_sword_upgrade_11}%\\niron 12 :%{price.iron_sword_upgrade_12}%""}'],title:""iron_sword_upgrade"",author:""513sam""}"
+					execute console command "/give %event-player% written_book{pages:['{""text"":""diamond 0 :%{price.diamond_sword_upgrade_0}%\\ndiamond 1 :%{price.diamond_sword_upgrade_1}%\\ndiamond 2 :%{price.diamond_sword_upgrade_2}%\\ndiamond 3 :%{price.diamond_sword_upgrade_3}%\\ndiamond 4 :%{price.diamond_sword_upgrade_4}%\\ndiamond 5 :%{price.diamond_sword_upgrade_5}%\\ndiamond 6 :%{price.diamond_sword_upgrade_6}%\\ndiamond 7 :%{price.diamond_sword_upgrade_7}%\\ndiamond 8 :%{price.diamond_sword_upgrade_8}%\\ndiamond 9 :%{price.diamond_sword_upgrade_9}%\\ndiamond 10 :%{price.diamond_sword_upgrade_10}%\\ndiamond 11 :%{price.diamond_sword_upgrade_11}%\\ndiamond 12 :%{price.diamond_sword_upgrade_12}%""}'],title:""diamond_sword_upgrade"",author:""513sam""}"
+					execute console command "/give %event-player% written_book{pages:['{""text"":""netherite 0 :%{price.netherite_sword_upgrade_0}%\\nnetherite 1 :%{price.netherite_sword_upgrade_1}%\\nnetherite 2 :%{price.netherite_sword_upgrade_2}%\\nnetherite 3 :%{price.netherite_sword_upgrade_3}%\\nnetherite 4 :%{price.netherite_sword_upgrade_4}%\\nnetherite 5 :%{price.netherite_sword_upgrade_5}%\\nnetherite 6 :%{price.netherite_sword_upgrade_6}%\\nnetherite 7 :%{price.netherite_sword_upgrade_7}%\\nnetherite 8 :%{price.netherite_sword_upgrade_8}%\\nnetherite 9 :%{price.netherite_sword_upgrade_9}%\\nnetherite 10 :%{price.netherite_sword_upgrade_10}%\\nnetherite 11 :%{price.netherite_sword_upgrade_11}%\\nnetherite 12 :%{price.netherite_sword_upgrade_12}%""}'],title:""netherite_sword_upgrade"",author:""513sam""}"
+					
 			if arg 2 is set:
 				if arg 1 is "set":
 					if arg 2 is "normal":
@@ -29,6 +50,8 @@ command /price [<text>] [<text>] [<text>] [<integer>] [<integer>]:
 					if arg 2 is "upgrade":
 						set {price.%arg 3%_upgrade_%arg 4%} to arg 5
 						message "%arg 3%의 %arg 4%단계에서 %arg 4 + 1%에 가기위한 가격이 %{price.%arg 3%_upgrade_%arg 4%}%원 으로 변경되었습니다" to player
+					if arg 2 is "evolve":
+						message "%arg 3%에서 다음검에 가기위한 가격이 %{price.%arg 3%_evolve}%원 으로 변경되었습니다" to player
 		if arg 1 is not set:
 			message "/price list : 가격표 확인" to player 
 			message "/price set normal [아이템이름] [설정할가격] : 일반 아이템 가격 번경" to player
@@ -38,4 +61,151 @@ command /price [<text>] [<text>] [<text>] [<integer>] [<integer>]:
 
 
 
+every 0.1 seconds:
+	loop all players:
+		set {sword_upgrade_lvl.%loop-player%} to ("%{sword_upgrade_lvl.%loop-player%}%" parsed as number)
+		set {next_sword_ench.%loop-player%} to ("%{next_sword_ench.%loop-player%}%" parsed as number)
+		if {sword_upgrade.%loop-player%} is "wooden_sword":
+			if {sword_upgrade_lvl.%loop-player%} <= 6:
+				set {sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%}
+			if {sword_upgrade_lvl.%loop-player%} <= 5:	
+				set {next_sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%} + 1
+			if {sword_upgrade_lvl.%loop-player%} = 6:	
+				set {next_sword_ench.%loop-player%} to 8
+			if {sword_upgrade_lvl.%loop-player%} = 7:
+				set {sword_ench.%loop-player%} to 8
+				set {next_sword_ench.%loop-player%} to 12
+			if {sword_upgrade_lvl.%loop-player%} = 8:
+				set {sword_ench.%loop-player%} to 12
+				set {next_sword_ench.%loop-player%} to 16
+			if {sword_upgrade_lvl.%loop-player%} = 9:
+				set {sword_ench.%loop-player%} to 16
+				set {next_sword_ench.%loop-player%} to 20
+			if {sword_upgrade_lvl.%loop-player%} = 10:
+				set {sword_ench.%loop-player%} to 20
+				set {next_sword_ench.%loop-player%} to 25
+			if {sword_upgrade_lvl.%loop-player%} = 11:
+				set {sword_ench.%loop-player%} to 25
+				set {next_sword_ench.%loop-player%} to 30
+			if {sword_upgrade_lvl.%loop-player%} = 12:
+				set {sword_ench.%loop-player%} to 30
+		if {sword_upgrade.%loop-player%} is "stone_sword":
+			if {sword_upgrade_lvl.%loop-player%} <= 5:
+				set {sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%}
+			if {sword_upgrade_lvl.%loop-player%} <= 4:
+				set {next_sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%} + 1
+			if {sword_upgrade_lvl.%loop-player%} = 5:
+				set {next_sword_ench.%loop-player%} to 7
+			if {sword_upgrade_lvl.%loop-player%} = 6:
+				set {sword_ench.%loop-player%} to 7
+				set {next_sword_ench.%loop-player%} to 9
+			if {sword_upgrade_lvl.%loop-player%} = 7:
+				set {sword_ench.%loop-player%} to 9
+				set {next_sword_ench.%loop-player%} to 11
+			if {sword_upgrade_lvl.%loop-player%} = 8:
+				set {sword_ench.%loop-player%} to 11
+				set {next_sword_ench.%loop-player%} to 13
+			if {sword_upgrade_lvl.%loop-player%} = 9:
+				set {sword_ench.%loop-player%} to 13
+				set {next_sword_ench.%loop-player%} to 15
+			if {sword_upgrade_lvl.%loop-player%} = 10:
+				set {sword_ench.%loop-player%} to 15
+				set {next_sword_ench.%loop-player%} to 17
+			if {sword_upgrade_lvl.%loop-player%} = 11:
+				set {sword_ench.%loop-player%} to 17
+				set {next_sword_ench.%loop-player%} to 20
+			if {sword_upgrade_lvl.%loop-player%} = 12:
+				set {sword_ench.%loop-player%} to 20
+		if {sword_upgrade.%loop-player%} is "iron_sword":
+			if {sword_upgrade_lvl.%loop-player%} <= 7:
+				set {sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%}
+			if {sword_upgrade_lvl.%loop-player%} <= 6:
+				set {next_sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%} + 1
+			if {sword_upgrade_lvl.%loop-player%} = 8:
+				set {next_sword_ench.%loop-player%} to 9
+			if {sword_upgrade_lvl.%loop-player%} = 8:
+				set {sword_ench.%loop-player%} to 9
+				set {next_sword_ench.%loop-player%} to 11
+			if {sword_upgrade_lvl.%loop-player%} = 9:
+				set {sword_ench.%loop-player%} to 11
+				set {next_sword_ench.%loop-player%} to 13
+			if {sword_upgrade_lvl.%loop-player%} = 10:
+				set {sword_ench.%loop-player%} to 13
+				set {next_sword_ench.%loop-player%} to 15
+			if {sword_upgrade_lvl.%loop-player%} = 11:
+				set {sword_ench.%loop-player%} to 15
+				set {next_sword_ench.%loop-player%} to 17
+			if {sword_upgrade_lvl.%loop-player%} = 12:
+				set {sword_ench.%loop-player%} to 17
+		if {sword_upgrade.%loop-player%} is "diamond_sword":
+			if {sword_upgrade_lvl.%loop-player%} <= 10:
+				set {sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%}
+			if {sword_upgrade_lvl.%loop-player%} <= 9:
+				set {next_sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%} + 1
+			if {sword_upgrade_lvl.%loop-player%} = 10:
+				set {next_sword_ench.%loop-player%} to 12
+			if {sword_upgrade_lvl.%loop-player%} = 11:
+				set {sword_ench.%loop-player%} to 12
+				set {next_sword_ench.%loop-player%} to 14
+			if {sword_upgrade_lvl.%loop-player%} = 12:
+				set {sword_ench.%loop-player%} to 14
+		if {sword_upgrade.%loop-player%} is "diamond_sword":
+			if {sword_upgrade_lvl.%loop-player%} <= 5:
+				set {sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%}
+			if {next_sword_upgrade_lvl.%loop-player%} <= 4:
+				set {next_sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%} + 1
+			if {sword_upgrade_lvl.%loop-player%} = 6:
+				set {sword_ench.%loop-player%} to 5
 
+
+every 0.1 seconds:
+	loop all players:
+		if {sword_upgrade.%loop-player%} is "wooden_sword":
+			if {sword_upgrade_lvl.%loop-player%} >= 10:
+				set {은신.%loop-player%} to true
+			if {sword_upgrade_lvl.%loop-player%} >= 10:
+				set {은신.%loop-player%} to true
+		else:
+			set {은신.%loop-player%} to false
+
+
+every 0.1 seconds:
+	loop all players:
+		if {sword_upgrade.%loop-player%} is "stone_sword":
+			if {sword_upgrade_lvl.%loop-player%} >= 10:
+				set {흡수.%loop-player%} to true
+			if {sword_upgrade_lvl.%loop-player%} >= 10:
+				set {흡수.%loop-player%} to true
+		else:
+			set {흡수.%loop-player%} to false
+
+
+every 0.1 seconds:
+	loop all players:
+		if {sword_upgrade.%loop-player%} is "iron_sword":
+			if {sword_upgrade_lvl.%loop-player%} >= 10:
+				set {추가피해.%loop-player%} to true
+			if {sword_upgrade_lvl.%loop-player%} >= 10:
+				set {추가피해.%loop-player%} to true
+		else:
+			set {추가피해.%loop-player%} to false
+
+every 0.1 seconds:
+	loop all players:
+		if {sword_upgrade.%loop-player%} is "diamond_sword":
+			if {sword_upgrade_lvl.%loop-player%} >= 10:
+				set {재생.%loop-player%} to true
+			if {sword_upgrade_lvl.%loop-player%} >= 10:
+				set {재생.%loop-player%} to true
+		else:
+			set {재생.%loop-player%} to false
+
+every 0.1 seconds:
+	loop all players:
+		if {sword_upgrade.%loop-player%} is "stone_sword":
+			if {sword_upgrade_lvl.%loop-player%} = 6:
+				set {저항.%loop-player%} to true
+			if {sword_upgrade_lvl.%loop-player%} = 6:
+				set {저항.%loop-player%} to true
+		else:
+			set {저항.%loop-player%} to false
