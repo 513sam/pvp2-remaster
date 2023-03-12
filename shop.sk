@@ -20,16 +20,35 @@ command /상점:
 
 command /buy [<text>] [<integer>] [<player>]:
 	trigger:
-		if {price.%arg 1%} <= {pvp돈.%arg 3%}:
-			if {buylimit.%arg 1%} <= {buystack.%arg 1%.%arg 3%}:
-				message "cancel event" to arg 3
+		if arg 1 is "enchanted_golden_apple":
 			if {buylimit.%arg 1%} > {buystack.%arg 1%.%arg 3%}:
-				message "purchase" to arg 3
-				add 1 to {buystack.%arg 1%.%arg 3%}
-				
-				subtract {price.%arg 1%} * arg 2 from {pvp돈.%arg 3%}
-		if {price.%arg 1%} > {pvp돈.%arg 3%}:
-			message "돈이 부족합니다"
+				if {price.%arg 1%} <= {pvp돈.%arg 3%}:
+					add 1 to {buystack.%arg 1%.%arg 3%}
+					subtract {price.%arg 1%} from {pvp돈.%arg 3%}
+					execute console command "/give %arg 3% %arg 1% 1"
+					message "구매되었습니다." to arg 3
+				if {price.%arg 1%} > {pvp돈.%arg 3%}:
+					message "돈이 부족합니다" to player
+			if {buylimit.%arg 1%} <= {buystack.%arg 1%.%arg 3%}:
+			message "구매 제한 횟수를 초과했습니다" to player
+		else:
+			if {price.%arg 1%} <= {pvp돈.%arg 3%}:
+				subtract {price.%arg 1%} from {pvp돈.%arg 3%}
+				if arg 1 is "arrow":
+					execute console command "/give %arg 3% arrow 16"
+				if arg 1 is "spectral_arrow":
+					execute console command "/give %arg 3% spectral_arrow 10"
+				if arg 1 is "tipped_arrow":
+					chance of 80%:
+						execute console command "/give %arg 3% tipped_arrow{Potion:""minecraft:luck""} 14"
+					else:
+						execute console command "/give %arg 3% tipped_arrow{Potion:""minecraft:luck""} 24"
+						message "행운이 깃들길... (+10)" to arg 3
+				else:
+					execute console command "/give %arg 3% %arg 1% 1"
+				message "구매되었습니다." to arg 3
+			if {price.%arg 1%} > {pvp돈.%arg 3%}:
+				message "돈이 부족합니다" to player
 
 
 
@@ -37,10 +56,40 @@ command /buy [<text>] [<integer>] [<player>]:
 
 command /shop [<text>]:
 	trigger:
+		set {상점이용중.%event-player%} to true
 		if arg 1 is "sword":
-			set {상점이용중.%event-player%} to true
+			set {sword_upgrade_lvl.%event-player%} to ("%{sword_upgrade_lvl.%event-player%}%" parsed as number)
+			set {next_sword_ench.%event-player%} to ("%{next_sword_ench.%event-player%}%" parsed as number)
 			open chest with 3 rows named "검 업그레이드 상점" to player
-			set slot 10 of current inventory of player to iron sword named "&l검 업그레이드" with lore "&l&e검을 업그레이드 할수 있는 상점입니다"
+			if {sword_upgrade.%event-player%} is "wooden_sword":
+				set slot 11 of current inventory of player to ("wooden sword of sharpness %{next_sword_ench.%event-player%}%" parsed as item) named "&l나무검 &d(+%{sword_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e검 강화시" and "&l&e 강화비용 : %{price.wooden_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}%"
+				if {sword_upgrade_lvl.%event-player%} < 5:
+					set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화단계 : 5단계 이상"
+				if {sword_upgrade_lvl.%event-player%} >= 5:
+					set slot 15 of current inventory of player to stone sword named "&l다음검으로 업그레이드" with lore "&l&e돌검으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.wooden_sword_evolve}%"
+			if {sword_upgrade.%event-player%} is "stone_sword":
+				set slot 11 of current inventory of player to ("stone sword of sharpness %{next_sword_ench.%event-player%}%" parsed as item) named "&l돌검 &d(+%{sword_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e검 강화시" and "&l&e 강화비용 : %{price.stone_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}%"
+				if {sword_upgrade_lvl.%event-player%} < 5:
+					set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화단계 : 5단계 이상"
+				if {sword_upgrade_lvl.%event-player%} >= 5:
+					set slot 15 of current inventory of player to iron sword named "&l다음검으로 업그레이드" with lore "&l&e철검으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.stone_sword_evolve}%"
+			if {sword_upgrade.%event-player%} is "iron_sword":
+				set slot 11 of current inventory of player to ("iron sword of sharpness %{next_sword_ench.%event-player%}%" parsed as item) named "&l철검 &d(+%{sword_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e검 강화시" and "&l&e 강화비용 : %{price.iron_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}%"
+				if {sword_upgrade_lvl.%event-player%} < 5:
+					set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화단계 : 5단계 이상"
+				if {sword_upgrade_lvl.%event-player%} >= 5:
+					set slot 15 of current inventory of player to diamond sword named "&l다음검으로 업그레이드" with lore "&l&e다이아검으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.iron_sword_evolve}%"
+			if {sword_upgrade.%event-player%} is "diamond_sword":
+				set slot 11 of current inventory of player to ("diamond sword of sharpness %{next_sword_ench.%event-player%}%" parsed as item) named "&l다이아검 &d(+%{sword_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e검 강화시" and "&l&e 강화비용 : %{price.diamond_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}%"
+				if {sword_upgrade_lvl.%event-player%} < 5:
+					set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화단계 : 5단계 이상"
+				if {sword_upgrade_lvl.%event-player%} >= 5:
+					set slot 15 of current inventory of player to netherite sword named "&l다음검으로 업그레이드" with lore "&l&e네더라이트검으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.diamond_sword_evolve}%"
+			if {sword_upgrade.%event-player%} is "netherite_sword":
+				if {sword_upgrade_lvl.%event-player%} <= 4:
+					set slot 13 of current inventory of player to ("netherite sword of sharpness %{next_sword_ench.%event-player%}%" parsed as item) named "&l네더라이트검 &d(+%{sword_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e검 강화시" and "&l&e 강화비용 : %{price.netherite_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}%"
+				if {sword_upgrade_lvl.%event-player%} = 5:
+					set slot 13 of current inventory of player to ("netherite sword of sharpness 5,fire aspect 1" parsed as item) named "&l네더라이트검 &d(+%{sword_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e검 강화시" and "&l&e 강화비용 : %{price.netherite_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}%"
 		if arg 1 is "bow":
 			if {bool_bow.%event-player%} is false:
 				open chest with 3 rows named "활구매" to player
@@ -67,11 +116,11 @@ command /shop [<text>]:
 			set slot 15 of current inventory of player to enchanted golden apple named "&l도구" with lore "&l&e전투에 도움이 되는 아이템들을 구매하실수 있습니다."
 		if arg 1 is "tool":
 			open chest with 5 rows named "도구상점" to player
-			set slot 10 of current inventory of player to enchanted golden apple named "&l보라색 황금사과" with lore "&l&e비용 : %{price.enchanted_golden_apple}%" and "구매재한 : %{buylimit.enchanted_golden_apple}%"	
+			set slot 10 of current inventory of player to enchanted golden apple named "&l보라색 황금사과" with lore "&l&e비용 : %{price.enchanted_golden_apple}%" and "&l&e구매재한 : %{buylimit.enchantedgolden_apple}%"
 			set slot 12 of current inventory of player to honey bottle named "&l꿀이든 병" with lore "&l&e비용 : %{price.honey_bottle}%"
 			set slot 14 of current inventory of player to milk bucket named "&l우유 양동이" with lore "&l&e비용 : %{price.milk_bucket}%"
 			set slot 16 of current inventory of player to ender pearl named "&l&e앤더 진주" with lore "&l&e비용 : %{price.milk_bucket}%"
-			set slot 28 of current inventory of player to golden apple named "&l황금사과" with lore "&l&e비용 : %{price.golden_apple}%" and "&l&e구매재한 : %{buylimit.golden_apple}%"
+			set slot 28 of current inventory of player to golden apple named "&l황금사과" with lore "&l&e비용 : %{price.golden_apple}%"
 			set slot 30 of current inventory of player to goat horn named "&l염소뿔" with lore "&l&e비용 : %{price.goat_horn}%"
 			set slot 32 of current inventory of player to powder snow bucket named "&l가루눈 양동이" with lore "&l&e비용 : %{price.powder_snow_bucket}%" and "&l&e불을 끌때 사용하세요!"
 			set slot 34 of current inventory of player to spyglass named "&l망원경" with lore "&l&e비용 : %{price.spyglass}%"
@@ -79,9 +128,9 @@ command /shop [<text>]:
 			#화살을 클릭했을때
 			#상자열리면서 화살 11번 발광화살 13번 행운화살 15번 생성
 			open chest with 3 rows named "화살" to player
-			set slot 11 of current inventory of player to arrow named "&l기본화살" with lore "&l&7평범한 화살입니다." and "&l&e비용 : %{price.arrow}%"
-			set slot 13 of current inventory of player to spectral arrow named "&l발광화살" with lore "&l&e발광 화살입니다." and "&l&e비용 : %{price.spectral_arrow}%"
-			set slot 15 of current inventory of player to tipped arrow of luck named "&l행운화살" with lore "&l&a행운 화살입니다." and "&l&e비용 : %{price.tipped_arrow_of_luck}%"
+			set slot 11 of current inventory of player to 16 arrow named "&l기본화살" with lore "&l&7평범한 화살입니다." and "&l&e비용 : %{price.arrow}%"
+			set slot 13 of current inventory of player to 10 spectral arrow named "&l발광화살" with lore "&l&e발광 화살입니다." and "&l&e비용 : %{price.spectral_arrow}%"
+			set slot 15 of current inventory of player to 14 tipped arrow of luck named "&l행운화살" with lore "&l&a행운의 화살입니다." and "&l&a사면 엄청난 행운이?..." and "&l&e비용 : %{price.tipped_arrow_of_luck}%"
 		if arg 1 is "potion":
 			#힘 상승 그대신 위더: 분노의 영약, 재생: 체력 물약, 흡수 그대신 구속: 강철의 영약, 신속 그대신 나약함: 속도의 물약
 			open chest with 5 rows named "물약" to player
@@ -91,37 +140,55 @@ command /shop [<text>]:
 			set slot 16 of current inventory of player to potion of swiftness named "&l속도의 물약" with lore "&l&b속도의 물약입니다." and "&l&b속도가 빨라집니다" and "&l&8그러나 공격력이 낮아집니다." and "&l&b비용 : %{price.potion_of_swiftness}%"
 		if arg 1 is "stat":
 			open chest with 3 rows named "스탯 업그레이드" to player
-			set slot 11 of current inventory of player to apple named "&l&c체력" with lore "&l&a현재 체력 스텟 : %{health_lvl.%event-player%}%" and "&l&e비용 : %{price.healthupgrade%{health_lvl.%event-player%}%}%"
-			set slot 15 of current inventory of player to shiny writable book named "&l&f지혜" with lore "&l&a현재 지혜 스텟 : %{wisdom_lvl.%event-player%}%" and "&l&e비용 : %{price.wisdomupgrade%{wisdom_lvl.%event-player%}%}%"
+			set slot 11 of current inventory of player to apple named "&l&c체력" with lore "&l&a현재 체력 스텟 : %{stat_health.%event-player%}%" and "&l&e비용 : %{price.health_upgrade_%{stat_health.%event-player%}%}%"
+			set slot 15 of current inventory of player to shiny iron sword named "&l&f힘" with lore "&l&a현재 힘 스텟 : %{stat_strength.%event-player%}%" and "&l&e비용 : %{price.strength_upgrade_%{stat_strength.%event-player%}%}%"
 
 
 on inventory click:
-	if inventory name of current inventory of player contains "업그레이드":
+	if inventory name of current inventory of player contains "검 업그레이드":
 		cancel event
-		if clicked item's name is " ":
+		if clicked item's name is "나무검":
+			execute player command "/upgradesword"
+		if clicked item's name is "돌검":
+			execute player command "/upgradesword"
+		if clicked item's name is "철검":
+			execute player command "/upgradesword"
+		if clicked item's name is "다이아검":
+			execute player command "/upgradesword"
+		if clicked item's name is "네더라이트검":
+			execute player command "/upgradesword"
+		if clicked item's name is "다음검으로 업그레이드":
+			execute player command "/evolvesword"
+			
+
+
 	if inventory name of current inventory of player contains "물약":
 		cancel event
-
 	if inventory name of current inventory of player contains "도구":
 		cancel event
-
 	if inventory name of current inventory of player contains "화살":
 		cancel event
 	if inventory name of current inventory of player contains "메뉴":
 		cancel event
 	if inventory name of current inventory of player contains "소모품":
 		cancel event
+	if inventory name of current inventory of player contains "활구매":
+		cancel event
+		if clicked item's name contains "활 구매":
+			execute player command "/upgradebow"
+
+
+			
 	if inventory name of current inventory of player contains "활 업그레이드 상점":
 		cancel event
 		if clicked item's name contains "강화":
 			close player's inventory
-			execute player command "/shop"
+			execute player command "/upgradebow"
 
 
 
 on inventory close:
 	set {상점이용중.%player%} to false
-
 
 		
 on inventory click:
@@ -138,7 +205,7 @@ on inventory click:
 			execute player command "/shop usable"
 		if clicked item's name contains "스탯 업그레이드":
 			close player's inventory
-			execute player command "/shop stat"		
+			execute player command "/shop stat"
 
 on inventory click:
 	if name of current inventory of player contains "&l소모품상점":
@@ -180,6 +247,95 @@ command /upgradebow:
 			if {pvp돈.%event-player%} < {price.bow_upgrade_%{pow_ench.%event-player%}%}:
 				message "&l&a돈이 부족합니다" to player
 
-set {bool_bow.%event-player%} to false
-set {pvp돈.%event-player%} to 0
-set {pow_ench.%event-player%} to 0
+
+
+
+
+
+command /upgradesword:
+	trigger:
+		if {sword_upgrade.%event-player%} is "wooden_sword":
+			if {pvp돈.%event-player%} >= {price.wooden_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
+				subtract {price.wooden_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%} from {pvp돈.%event-player%}
+				execute player command "/clear %event-player% wooden_sword"
+				execute player command "/give %event-player% wooden_sword{display:{Name:'[{""text"":""나무검"",""bold"":true},{""text"":""(+%{sword_upgrade_lvl.%event-player%}%)"",""color"":""light_purple"",""bold"":true}]'},Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
+				add 1 to {sword_upgrade_lvl.%event-player%}
+				close event-player's inventory
+				message "&l&e업드레이드하였습니다" to player
+				execute player command "/shop sword"
+			if {pvp돈.%event-player%} < {price.wooden_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
+				message "&l&a돈이 부족합니다" to player
+		if {sword_upgrade.%event-player%} is "stone_sword":
+			if {pvp돈.%event-player%} >= {price.stone_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
+				subtract {price.stone_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%} from {pvp돈.%event-player%}
+				execute player command "/clear %event-player% stone_sword"
+				execute player command "/give %event-player% stone_sword{display:{Name:'[{""text"":""돌검"",""bold"":true},{""text"":""(+%{sword_upgrade_lvl.%event-player%}%)"",""color"":""light_purple"",""bold"":true}]'},Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
+				add 1 to {sword_upgrade_lvl.%event-player%}
+				close event-player's inventory
+				message "&l&e업드레이드하였습니다" to player
+				execute player command "/shop sword"
+			if {pvp돈.%event-player%} < {stone_price.sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
+				message "&l&a돈이 부족합니다" to player
+		if {sword_upgrade.%event-player%} is "iron_sword":
+			if {pvp돈.%event-player%} >= {price.iron_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
+				subtract {price.iron_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%} from {pvp돈.%event-player%}
+				execute player command "/clear %event-player% iron_sword"
+				execute player command "/give %event-player% iron_sword{display:{Name:'[{""text"":""철검"",""bold"":true},{""text"":""(+%{sword_upgrade_lvl.%event-player%}%)"",""color"":""light_purple"",""bold"":true}]'},Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
+				add 1 to {sword_upgrade_lvl.%event-player%}
+				close event-player's inventory
+				message "&l&e업드레이드하였습니다" to player
+				execute player command "/shop sword"
+			if {pvp돈.%event-player%} < {iron_price.sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
+				message "&l&a돈이 부족합니다" to player
+		if {sword_upgrade.%event-player%} is "diamond_sword":
+			if {pvp돈.%event-player%} >= {price.diamond_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
+				subtract {price.diamond_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%} from {pvp돈.%event-player%}
+				execute player command "/clear %event-player% diamond_sword"
+				execute player command "/give %event-player% diamond_sword{display:{Name:'[{""text"":""다이아검"",""bold"":true},{""text"":""(+%{sword_upgrade_lvl.%event-player%}%)"",""color"":""light_purple"",""bold"":true}]'},Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
+				add 1 to {sword_upgrade_lvl.%event-player%}
+				close event-player's inventory
+				message "&l&e업드레이드하였습니다" to player
+				execute player command "/shop sword"
+			if {pvp돈.%event-player%} < {diamond_price.sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
+				message "&l&a돈이 부족합니다" to player
+		if {sword_upgrade.%event-player%} is "netherite_sword":
+			if {pvp돈.%event-player%} >= {price.netherite_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
+				if {sword_upgrade_lvl.%event-player%} <= 5:
+					subtract {price.netherite_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%} from {pvp돈.%event-player%}
+					execute player command "/clear %event-player% netherite_sword"
+					execute player command "/give %event-player% netherite_sword{display:{Name:'[{""text"":""네더라이트검"",""bold"":true},{""text"":""(+%{sword_upgrade_lvl.%event-player%}%)"",""color"":""light_purple"",""bold"":true}]'},Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
+					add 1 to {sword_upgrade_lvl.%event-player%}
+					close event-player's inventory
+					message "&l&e업드레이드하였습니다" to player
+					execute player command "/shop sword"
+				if {sword_upgrade_lvl.%event-player%} = 6:
+					subtract {price.netherite_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%} from {pvp돈.%event-player%}
+					execute player command "/clear %event-player% netherite_sword"
+					execute player command "/give %event-player% netherite_sword{display:{Name:'[{""text"":""네더라이트검"",""bold"":true},{""text"":""(+%{sword_upgrade_lvl.%event-player%}%)"",""color"":""light_purple"",""bold"":true}]'},Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s},{id:""minecraft:fire_aspect"",lvl:1s}]} 1"
+					close event-player's inventory
+					message "&l&e최종 업드레이드하였습니다" to player
+					execute player command "/shop sword"
+			if {pvp돈.%event-player%} < {netherite_price.sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
+				message "&l&a돈이 부족합니다" to player
+
+
+command /upgradestat [<text>]:
+	trigger:
+		if arg 1 is "health":
+			if {pvp돈.%event-player%} >= {price.health_upgrade_%{stat_health.%event-player%}%}:
+				subtract {price.health_upgrade_%{stat_health.%event-player%}%} from {pvp돈.%event-player%}
+				add 1 to {stat_health.%event-player%}
+				close event-player's inventory
+				message "&l&e업드레이드하였습니다" to player
+				execute player command "/shop stat"
+			if {pvp돈.%event-player%} < {price.health_upgrade_%{stat_health.%event-player%}%}:
+				message "&l&a돈이 부족합니다" to player
+		if arg 1 is "strength":
+			if {pvp돈.%event-player%} >= {price.strength_upgrade_%{stat_strength.%event-player%}%}:
+				subtract {price.strength_upgrade_%{stat_strength.%event-player%}%} from {pvp돈.%event-player%}
+				add 1 to {stat_strength.%event-player%}
+				close event-player's inventory
+				message "&l&e업드레이드하였습니다" to player
+				execute player command "/shop stat"
+			if {pvp돈.%event-player%} < {price.strength_upgrade_%{stat_strength.%event-player%}%}:
+				message "&l&a돈이 부족합니다" to player
