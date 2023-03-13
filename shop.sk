@@ -221,6 +221,27 @@ on inventory click:
 			execute player command "/shop tool"
 
 
+command /evolve [<text>]:
+		trigger:
+			if {sword_upgrade_lvl.%event-player%} >= 5:
+				if {pvp돈.%event-player%} >= {price.%arg 1%_evolve}:
+					subtract 5 from {sword_upgrade_lvl.%event-player%}
+					execute console command "/clear %event-player% %arg 1% 1"
+					execute console command "/execute as %event-player% at @s run playersound anvil.fix ~ ~ ~ @a 1 1 1"
+					wait 1 seconds
+					if {sword_upgrade.%event-player%} is "wooden_sword":
+						exeucte console command "/give stone_sword %arg 1%{Unbreakable:1b,Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
+					if {sword_upgrade.%event-player%} is "stone_sword":
+						exeucte console command "/give iron_sword %arg 1%{Unbreakable:1b,Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
+					if {sword_upgrade.%event-player%} is "iron_sword":
+						exeucte console command "/give diamond_sword %arg 1%{Unbreakable:1b,Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
+					if {sword_upgrade.%event-player%} is "diamond_sword":
+						exeucte console command "/give netherite_sword %arg 1%{Unbreakable:1b,Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
+					message "검이 진화 하였습니다." to event-player
+				if {pvp돈.%event-player%} >= {price.%arg 1%_evolve}:
+					message "돈이 부족합니다." to event-player  
+
+
 
 
 command /upgradebow:
