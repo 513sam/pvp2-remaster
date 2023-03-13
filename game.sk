@@ -1,7 +1,9 @@
 every 0.5 seconds:
 	loop all players:
 		set {stat_health.%loop-player%} to ("%{stat_health.%loop-player%}%" parsed as number)
-		execute console command "/attribute %loop-player% minecraft:generic.max_health base set %{stat_health.%loop-player%} + 20%"
+		set {stat_health_real.%loop-player%} to {stat_health.%loop-player%} * 2
+		set {stat_health_real.%loop-player%} to  ("%{stat_health_real.%loop-player%}%" parsed as number)
+		execute console command "/attribute %loop-player% minecraft:generic.max_health base set %{stat_health_real.%loop-player%} + 20%"
 
 
 on damage of player:
@@ -11,12 +13,14 @@ on damage of player:
 
 on drop:
 	if {게임진행} is true:
-		cancel event
+		if player's gamemode is adventure:
+			cancel event
 			
 
 on break:
 	if {게임진행} is true:
-		cancel event
+		if player's gamemode is adventure:
+			cancel event
 
 on consume of enchanted golden apple:
 	cancel event
@@ -41,7 +45,9 @@ command /price [<text>] [<text>] [<text>] [<integer>] [<integer>]:
 					execute console command "/give %event-player% written_book{pages:['{""text"":""iron 0 : %{price.iron_sword_upgrade_0}%\\niron 1 : %{price.iron_sword_upgrade_1}%\\niron 2 : %{price.iron_sword_upgrade_2}%\\niron 3 : %{price.iron_sword_upgrade_3}%\\niron 4 : %{price.iron_sword_upgrade_4}%\\niron 5 : %{price.iron_sword_upgrade_5}%\\niron 6 : %{price.iron_sword_upgrade_6}%\\niron 7 : %{price.iron_sword_upgrade_7}%\\niron 8 : %{price.iron_sword_upgrade_8}%\\niron 9 : %{price.iron_sword_upgrade_9}%\\niron 10 : %{price.iron_sword_upgrade_10}%\\niron 11 : %{price.iron_sword_upgrade_11}%""}'],title:""iron_sword_upgrade"",author:""513sam""}"
 					execute console command "/give %event-player% written_book{pages:['{""text"":""diamond 0 : %{price.diamond_sword_upgrade_0}%\\ndiamond 1 : %{price.diamond_sword_upgrade_1}%\\ndiamond 2 : %{price.diamond_sword_upgrade_2}%\\ndiamond 3 : %{price.diamond_sword_upgrade_3}%\\ndiamond 4 : %{price.diamond_sword_upgrade_4}%\\ndiamond 5 : %{price.diamond_sword_upgrade_5}%\\ndiamond 6 : %{price.diamond_sword_upgrade_6}%\\ndiamond 7 : %{price.diamond_sword_upgrade_7}%\\ndiamond 8 : %{price.diamond_sword_upgrade_8}%\\ndiamond 9 : %{price.diamond_sword_upgrade_9}%\\ndiamond 10 : %{price.diamond_sword_upgrade_10}%\\ndiamond 11 : %{price.diamond_sword_upgrade_11}%""}'],title:""diamond_sword_upgrade"",author:""513sam""}"
 					execute console command "/give %event-player% written_book{pages:['{""text"":""netherite 0 : %{price.netherite_sword_upgrade_0}%\\nnetherite 1 : %{price.netherite_sword_upgrade_1}%\\nnetherite 2 : %{price.netherite_sword_upgrade_2}%\\nnetherite 3 : %{price.netherite_sword_upgrade_3}%\\nnetherite 4 : %{price.netherite_sword_upgrade_4}%\\nnetherite 5 : %{price.netherite_sword_upgrade_5}%""}'],title:""netherite_sword_upgrade"",author:""513sam""}"
-					
+					message "health : %{price.health_upgrade}%"
+					message "strength : %{price.strength_upgrade}%"
+
 			if arg 2 is set:
 				if arg 1 is "set":
 					if arg 2 is "normal":
@@ -51,12 +57,25 @@ command /price [<text>] [<text>] [<text>] [<integer>] [<integer>]:
 						set {price.%arg 3%_upgrade_%arg 4%} to arg 5
 						message "%arg 3%의 %arg 4%단계에서 %arg 4 + 1%에 가기위한 가격이 %{price.%arg 3%_upgrade_%arg 4%}%원 으로 변경되었습니다" to player
 					if arg 2 is "evolve":
+						set {price.%arg 3%_evolve} to arg 4
 						message "%arg 3%에서 다음검에 가기위한 가격이 %{price.%arg 3%_evolve}%원 으로 변경되었습니다" to player
 		if arg 1 is not set:
-			message "/price list : 가격표 확인" to player 
+			message "/price list : 가격표 확인" to player
 			message "/price set normal [아이템이름] [설정할가격] : 일반 아이템 가격 번경" to player
 			message "/price set upgrade [bow/sword/armor/stat] [단계] [설정할가격] : 업그레이드 가격변경" to player
 
+every 0.5 seconds:
+	loop all players:
+		set {pvp돈.%loop-player%} to ("%{pvp돈.%loop-player%}%" parsed as number)
+		loop 12 times:
+			set {testfor} to loop-number - 1
+			set {price.wooden_sword_upgrade_%{testfor}%} to ("%{price.wooden_sword_upgrade_%{testfor}%}%" parsed as number)
+			set {price.stone_sword_upgrade_%{testfor}%} to ("%{price.stone_sword_upgrade_%{testfor}%}%" parsed as number)
+			set {price.iron_sword_upgrade_%{testfor}%} to ("%{price.iron_sword_upgrade_%{testfor}%}%" parsed as number)
+			set {price.diamond_sword_upgrade_%{testfor}%} to ("%{price.diamond_sword_upgrade_%{testfor}%}%" parsed as number)
+			set {price.netherite_sword_upgrade_%{testfor}%} to ("%{price.netherite_sword_upgrade_%{testfor}%}%" parsed as number)
+		set {price.health_upgrade} to ("%{price.health_upgrade}%" parsed as number)
+		set {price.strength_upgrade} to ("%{price.strength_upgrade}%" parsed as number)
 
 
 
@@ -149,7 +168,7 @@ every 0.1 seconds:
 				set {next_sword_ench.%loop-player%} to 14
 			if {sword_upgrade_lvl.%loop-player%} = 12:
 				set {sword_ench.%loop-player%} to 14
-		if {sword_upgrade.%loop-player%} is "diamond_sword":
+		if {sword_upgrade.%loop-player%} is "netherite_sword":
 			if {sword_upgrade_lvl.%loop-player%} <= 5:
 				set {sword_ench.%loop-player%} to {sword_upgrade_lvl.%loop-player%}
 			if {next_sword_upgrade_lvl.%loop-player%} <= 4:
