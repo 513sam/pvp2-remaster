@@ -46,7 +46,8 @@ command /pvp [<text>] [<text>] [<player>]:
 						set {sword_upgrade.%loop-player%} to "wooden_sword"
 						set {stat_health.%loop-player%} to 0
 						set {stat_strength.%loop-player%} to 0
-
+					set {price.health_upgrade} to 3000
+					set {price.strength_upgrade} to 15000
 					set {buylimit.enchanted_golden_apple} to 5
 					set {게임진행} to false
 					set {pvp게임진행} to false
