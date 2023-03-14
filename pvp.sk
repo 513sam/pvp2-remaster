@@ -46,7 +46,8 @@ command /pvp [<text>] [<text>] [<player>]:
 						set {sword_upgrade.%loop-player%} to "wooden_sword"
 						set {stat_health.%loop-player%} to 0
 						set {stat_strength.%loop-player%} to 0
-					set {price.health_upgrade} to 3000
+						set {scoreboard_output.%loop-player%} to false
+					set {price.health_upgrade} to 1500
 					set {price.strength_upgrade} to 15000
 					set {buylimit.enchanted_golden_apple} to 5
 					set {게임진행} to false
@@ -131,7 +132,7 @@ command /pvp [<text>] [<text>] [<player>]:
 							execute console command "/clear %player%"
 							execute console command "/give %player% minecraft:wooden_sword{Unbreakable:1b} 1"
 							execute console command "/spawnpoint %player% -8 4 -134"
-							execute console command "/tp %%player%% -8 4 -134"
+							execute console command "/tp %player% -8 4 -134"
 							if {blue.%player%} is true:
 								execute console command "/team join red %player%"
 								set {red.%player%} to true
@@ -155,7 +156,7 @@ command /pvp [<text>] [<text>] [<player>]:
 							execute console command "/clear %player%"
 							execute console command "/give %player% minecraft:wooden_sword{Unbreakable:1b} 1"
 							execute console command "/spawnpoint %player% -8 4 -61"
-							execute console command "/tp %%player%% -8 4 -61"
+							execute console command "/tp %player% -8 4 -61"
 							if {red.%player%} is true:
 								execute console command "/team join blue %player%"
 								set {blue.%player%} to true
@@ -222,6 +223,9 @@ every 1 seconds:
 	if {게임진행} is true:
 		if {레드팀준비} is true:
 			if {블루팀준비} is true:
+				add 1 to {라운드}
+				loop all players:
+					set {준비.%loop-player%} to false
 				set {red생존수} to {red팀원수}
 				set {blue생존수} to {blue팀원수}
 				set {레드팀준비} to false
@@ -239,6 +243,27 @@ every 1 seconds:
 				send title "게임시작!" to all players
 				set {pvp게임진행} to true
 				
+
+every 0.1 seconds:
+	if {라운드} < 10:
+		set {라운드배율} to 1
+	if {라운드} >= 10:
+		if {라운드} < 20:
+			set {라운드배율} to 2
+	if {라운드} >= 20:
+		if {라운드} < 30:
+			set {라운드배율} to 3
+	if {라운드} >= 30:
+		if {라운드} < 40:
+			set {라운드배율} to 4
+	if {라운드} >= 40:
+		if {라운드} < 50:
+			set {라운드배율} to 5
+	if {라운드} >= 50:
+		if {라운드} < 60:
+			set {라운드배율} to 10
+
+
 on damage:
 	if {무적시간} is true:
 		cancel event
@@ -250,46 +275,50 @@ on death:
 				if {red생존수} is above or equal to 1:
 					subtract 1 from {red생존수}
 					execute console command "/gamemode spectator %victim%"
-					add 3000 to {pvp돈.%attacker%}
+					add 3000  * {라운드배율} to {pvp돈.%attacker%}
 					if {red생존수} is 0:
 						set {연패.blue} to 0
 						add 1 to {연패.red}
 						add 1 to {blue팀점수}
 						set {패배보상배율.red} to 1 + 0.2 * {연패.red}
-						set {blue받아야할코인} to {blue생존수} * 2000
+						set {blue받아야할코인} to {blue생존수} * 2000 * {라운드배율}
 						loop all players:
 							if {blue.%loop-player%} is true:
 								add {blue받아야할코인} to {pvp돈.%loop-player%}
 							if {red.%loop-player%} is true:
-								add round(1900 * {패배보상배율.red}) to {pvp돈.%loop-player%}
+								add round(1900 * {패배보상배율.red} * {라운드배율}) to {pvp돈.%loop-player%}
 						send title "&1 블루팀 승리" to all players
 						execute console command "/pvp stop"
 						execute console command "/gamemode adventure @a[team=red]"
 						execute console command "/gamemode adventure @a[team=blue]"
 						execute console command "/kill @e[type=arrow]"
+						loop all players:
+							set {준비.%loop-player%} to false
 						stop
 					stop
 			if {blue.%victim%} is true:
 				if {blue생존수} is above or equal to 1:
 					subtract 1 from {blue생존수}
 					execute console command "/gamemode spectator %victim%"
-					add 3000 to {pvp돈.%attacker%}
+					add 3000  * {라운드배율} to {pvp돈.%attacker%}
 					if {blue생존수} is 0:
 						set {연패.red} to 0
 						add 1 to {연패.blue}
 						add 1 to {red팀점수}
 						set {패배보상배율.blue} to 1 + 0.1 * {연패.blue}
-						set {red받아야할코인} to {red생존수} * 2000
+						set {red받아야할코인} to {red생존수} * 2000 * {라운드배율}
 						loop all players:
 							if {red.%loop-player%} is true:
 								add {red받아야할코인} to {pvp돈.%loop-player%}
 							if {blue.%loop-player%} is true:
-								add round(1900 * {패배보상배율.blue}) to {pvp돈.%loop-player%}
+								add round(1900 * {패배보상배율.blue} * {라운드배율}) to {pvp돈.%loop-player%}
 						send title "&4 레드팀 승리" to all players
 						execute console command "/pvp stop"
 						execute console command "/gamemode adventure @a[team=red]"
 						execute console command "/gamemode adventure @a[team=blue]"
 						execute console command "/kill @e[type=arrow]"
+						loop all players:
+							set {준비.%loop-player%} to false
 						stop
 
 
