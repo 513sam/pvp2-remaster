@@ -16,7 +16,10 @@ on drop:
 		if player's gamemode is adventure:
 			cancel event
 			
-
+on pick up:
+	if {게임진행} is true:
+		if player's gamemode is adventure:
+			cancel event
 on break:
 	if {게임진행} is true:
 		if player's gamemode is adventure:
@@ -40,6 +43,7 @@ command /price [<text>] [<text>] [<text>] [<integer>] [<integer>]:
 			if arg 2 is not set:
 				if arg 1 is "list":
 					message "" to player
+					execute console command "/clear %event-player% written_book"
 					execute console command "/give %event-player% written_book{pages:['{""text"":""wood 0 : %{price.wooden_sword_upgrade_0}%\\nwood 1 : %{price.wooden_sword_upgrade_1}%\\nwood 2 : %{price.wooden_sword_upgrade_2}%\\nwood 3 : %{price.wooden_sword_upgrade_3}%\\nwood 4 : %{price.wooden_sword_upgrade_4}%\\nwood 5 : %{price.wooden_sword_upgrade_5}%\\nwood 6 : %{price.wooden_sword_upgrade_6}%\\nwood 7 : %{price.wooden_sword_upgrade_7}%\\nwood 8 : %{price.wooden_sword_upgrade_8}%\\nwood 9 : %{price.wooden_sword_upgrade_9}%\\nwood 10 : %{price.wooden_sword_upgrade_10}%\\nwood 11 : %{price.wooden_sword_upgrade_11}%""}'],title:""wooden_sword_upgrade"",author:""513sam""}"
 					execute console command "/give %event-player% written_book{pages:['{""text"":""stone 0 : %{price.stone_sword_upgrade_0}%\\nstone 1 : %{price.stone_sword_upgrade_1}%\\nstone 2 : %{price.stone_sword_upgrade_2}%\\nstone 3 : %{price.stone_sword_upgrade_3}%\\nstone 4 : %{price.stone_sword_upgrade_4}%\\nstone 5 : %{price.stone_sword_upgrade_5}%\\nstone 6 : %{price.stone_sword_upgrade_6}%\\nstone 7 : %{price.stone_sword_upgrade_7}%\\nstone 8 : %{price.stone_sword_upgrade_8}%\\nstone 9 : %{price.stone_sword_upgrade_9}%\\nstone 10 : %{price.stone_sword_upgrade_10}%\\nstone 11 : %{price.stone_sword_upgrade_11}%""}'],title:""stone_sword_upgrade"",author:""513sam""}"
 					execute console command "/give %event-player% written_book{pages:['{""text"":""iron 0 : %{price.iron_sword_upgrade_0}%\\niron 1 : %{price.iron_sword_upgrade_1}%\\niron 2 : %{price.iron_sword_upgrade_2}%\\niron 3 : %{price.iron_sword_upgrade_3}%\\niron 4 : %{price.iron_sword_upgrade_4}%\\niron 5 : %{price.iron_sword_upgrade_5}%\\niron 6 : %{price.iron_sword_upgrade_6}%\\niron 7 : %{price.iron_sword_upgrade_7}%\\niron 8 : %{price.iron_sword_upgrade_8}%\\niron 9 : %{price.iron_sword_upgrade_9}%\\niron 10 : %{price.iron_sword_upgrade_10}%\\niron 11 : %{price.iron_sword_upgrade_11}%""}'],title:""iron_sword_upgrade"",author:""513sam""}"
@@ -47,6 +51,11 @@ command /price [<text>] [<text>] [<text>] [<integer>] [<integer>]:
 					execute console command "/give %event-player% written_book{pages:['{""text"":""netherite 0 : %{price.netherite_sword_upgrade_0}%\\nnetherite 1 : %{price.netherite_sword_upgrade_1}%\\nnetherite 2 : %{price.netherite_sword_upgrade_2}%\\nnetherite 3 : %{price.netherite_sword_upgrade_3}%\\nnetherite 4 : %{price.netherite_sword_upgrade_4}%\\nnetherite 5 : %{price.netherite_sword_upgrade_5}%""}'],title:""netherite_sword_upgrade"",author:""513sam""}"
 					message "health : %{price.health_upgrade}%"
 					message "strength : %{price.strength_upgrade}%"
+					execute console command "/give %event-player% written_book{pages:['{""text"":""chainmail 0 : %{price.chainmail_armor_upgrade_0}%\\nchainmail 1 : %{price.chainmail_armor_upgrade_1}%\\nchainmail 2 : %{price.chainmail_armor_upgrade_2}%\\nchainmail 3 : %{price.chainmail_armor_upgrade_3}%\\nchainmail 4 : %{price.chainmail_armor_upgrade_4}%\\nchainmail 5 : %{price.chainmail_armor_upgrade_5}%\\nchainmail 6 : %{price.chainmail_armor_upgrade_6}%\\nchainmail 7 : %{price.chainmail_armor_upgrade_7}%\\nchainmail 8 : %{price.chainmail_armor_upgrade_8}%\\nchainmail 9 : %{price.chainmail_armor_upgrade_9}%\\nchainmail 10 : %{price.chainmail_armor_upgrade_10}%\\nchainmail 11 : %{price.chainmail_armor_upgrade_11}%""}'],title:""chainmail_armor_upgrade"",author:""513sam""}"
+					execute console command "/give %event-player% written_book{pages:['{""text"":""iron 0 : %{price.iron_armor_upgrade_0}%\\niron 1 : %{price.iron_armor_upgrade_1}%\\niron 2 : %{price.iron_armor_upgrade_2}%\\niron 3 : %{price.iron_armor_upgrade_3}%\\niron 4 : %{price.iron_armor_upgrade_4}%\\niron 5 : %{price.iron_armor_upgrade_5}%\\niron 6 : %{price.iron_armor_upgrade_6}%\\niron 7 : %{price.iron_armor_upgrade_7}%\\niron 8 : %{price.iron_armor_upgrade_8}%\\niron 9 : %{price.iron_armor_upgrade_9}%\\niron 10 : %{price.iron_armor_upgrade_10}%\\niron 11 : %{price.iron_armor_upgrade_11}%""}'],title:""iron_armor_upgrade"",author:""513sam""}"
+					execute console command "/give %event-player% written_book{pages:['{""text"":""diamond 0 : %{price.diamond_armor_upgrade_0}%\\ndiamond 1 : %{price.diamond_armor_upgrade_1}%\\ndiamond 2 : %{price.diamond_armor_upgrade_2}%\\ndiamond 3 : %{price.diamond_armor_upgrade_3}%\\ndiamond 4 : %{price.diamond_armor_upgrade_4}%\\ndiamond 5 : %{price.diamond_armor_upgrade_5}%\\ndiamond 6 : %{price.diamond_armor_upgrade_6}%\\ndiamond 7 : %{price.diamond_armor_upgrade_7}%\\ndiamond 8 : %{price.diamond_armor_upgrade_8}%\\ndiamond 9 : %{price.diamond_armor_upgrade_9}%\\ndiamond 10 : %{price.diamond_armor_upgrade_10}%\\ndiamond 11 : %{price.diamond_armor_upgrade_11}%""}'],title:""diamond_armor_upgrade"",author:""513sam""}"
+					execute console command "/give %event-player% written_book{pages:['{""text"":""netherite 0 : %{price.netherite_armor_upgrade_0}%\\nnetherite 1 : %{price.netherite_armor_upgrade_1}%\\nnetherite 2 : %{price.netherite_armor_upgrade_2}%\\nnetherite 3 : %{price.netherite_armor_upgrade_3}%\\nnetherite 4 : %{price.netherite_armor_upgrade_4}%\\nnetherite 5 : %{price.netherite_armor_upgrade_5}%""}'],title:""netherite_armor_upgrade"",author:""513sam""}"
+					
 
 			if arg 2 is set:
 				if arg 1 is "set":
@@ -74,8 +83,14 @@ every 0.5 seconds:
 			set {price.iron_sword_upgrade_%{testfor}%} to ("%{price.iron_sword_upgrade_%{testfor}%}%" parsed as number)
 			set {price.diamond_sword_upgrade_%{testfor}%} to ("%{price.diamond_sword_upgrade_%{testfor}%}%" parsed as number)
 			set {price.netherite_sword_upgrade_%{testfor}%} to ("%{price.netherite_sword_upgrade_%{testfor}%}%" parsed as number)
+		set {price.chainmail_armor_upgrade_0} to ("%{price.chainmail_armor_upgrade_0}%" parsed as number)
+		set {price.iron_armor_upgrade_0} to ("%{price.iron_armor_upgrade_0}%" parsed as number)
+		set {price.diamond_armor_upgrade_0} to ("%{price.diamond_armor_upgrade_0}%" parsed as number)
+		set {price.netherite_armor_upgrade_0} to ("%{price.netherite_armor_upgrade_0}%" parsed as number)
 		set {price.health_upgrade} to ("%{price.health_upgrade}%" parsed as number)
 		set {price.strength_upgrade} to ("%{price.strength_upgrade}%" parsed as number)
+		set {라운드} to ("%{라운드}%" parsed as number)
+		set {라운드배율} to ("%{라운드배율}%" parsed as number)
 
 
 
