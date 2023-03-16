@@ -6,7 +6,12 @@ every 0.5 seconds:
 		execute console command "/attribute %loop-player% minecraft:generic.max_health base set %{stat_health_real.%loop-player%} + 20%"
 
 
+
+
+
 on damage of player:
+	if damage cause is arrow:
+		set damage to damage * (1 + 0.05 * {stat_strength.%shooter%})
 	if attacker is player:
 		set damage to damage * (1 + 0.05 * {stat_strength.%attacker%})
 	
