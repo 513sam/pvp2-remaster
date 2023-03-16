@@ -8,7 +8,7 @@ command /scoreboard:
 			message "스코어보드 상태 : %{scoreboard_output.%event-player%}%" to player
 			stop
 		if {scoreboard.%event-player%} is true:
-			set {scoreboard_output%event-player%} to "비활성화"
+			set {scoreboard_output.%event-player%} to "비활성화"
 			set {scoreboard.%event-player%} to false
 			message "스코어보드 상태 : %{scoreboard_output.%event-player%}%" to player
 			stop
@@ -52,6 +52,14 @@ command /buy [<text>] [<integer>] [<player>]:
 		else:
 			if {price.%arg 1%} <= {pvp돈.%arg 3%}:
 				subtract {price.%arg 1%} from {pvp돈.%arg 3%}
+				if arg 1 is "potion_of_strength":
+					execute console command "/give %arg 3% minecraft:potion{display:{Name:'{""text"":""분노의 영약"",""color"":""dark_purple""}'},CustomPotionEffects:[{Id:5,Amplifier:2b,Duration:200},{Id:20,Amplifier:1b,Duration:200}],CustomPotionColor:5373952} 1"
+				if arg 1 is "potion_of_health":
+					execute console command "/give %arg 3% minecraft:potion{display:{Name:'{""text"":""체력 물약"",""color"":""red""}'},CustomPotionEffects:[{Id:10,Amplifier:2b,Duration:120}],CustomPotionColor:16711680} 1"
+				if arg 1 is "potion_of_fire_resistance":
+					execute console command "/give %arg 3% minecraft:potion{display:{Name:'{""text"":""강철의 영약"",""color"":""gray""}'},CustomPotionEffects:[{Id:11,Amplifier:0b,Duration:600},{Id:18,Amplifier:0b,Duration:600}],CustomPotionColor:12434877} 1"
+				if arg 1 is "potion_of_swiftness":
+					execute console command "/give %arg 3% minecraft:potion{display:{Name:'{""text"":""신속 물약"",""color"":""aqua""}'},CustomPotionEffects:[{Id:1,Amplifier:0b,Duration:400},{Id:9,Amplifier:0b,Duration:200}],CustomPotionColor:4607} 1"
 				if arg 1 is "arrow":
 					execute console command "/give %arg 3% arrow 15"
 				if arg 1 is "spectral_arrow":
@@ -73,6 +81,26 @@ command /buy [<text>] [<integer>] [<player>]:
 				message "돈이 부족합니다" to player
 				stop
 
+				execute console command "/item replace entity %event-player% armor.head with minecraft:diamond_helmet{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.legs with minecraft:diamond_leggings{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.feet with minecraft:diamond_boots{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.chest with minecraft:diamond_chestplate{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				stop
+			if {sword_upgrade.%event-player%} is "diamond":
+				close player's inventory
+				execute player command "/shop armor"
+				message "검이 진화 하였습니다." to event-player
+				set {sword_upgrade.%event-player%} to "netherite"
+				execute console command "/item replace entity %event-player% armor.head with minecraft:netherite_helmet{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.legs with minecraft:netherite_leggings{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.feet with minecraft:netherite_boots{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.chest with minecraft:netherite_chestplate{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				stop
+		if {pvp돈.%event-player%} >= {price.%arg 1%_evolve}:
+			message "돈이 부족합니다." to event-player  
+
+
+
 
 
 
@@ -82,42 +110,42 @@ command /shop [<text>]:
 		if arg 1 is set:
 			set {상점이용중.%event-player%} to true
 			if arg 1 is "armor":
-				set {armor_upgrade_lvl.%event-player%} to ("%{armor_upgrade_lvl.%event-player%}%" parsed as number)
+				set {armor_ench.%event-player%} to ("%{armor_ench.%event-player%}%" parsed as number)
 				set {next_armor_ench.%event-player%} to ("%{next_armor_ench.%event-player%}%" parsed as number)
+				set {next_armor_ench.%event-player%} to {armor_ench.%event-player%} + 1
 				open chest with 3 rows named "갑옷 업그레이드 상점" to player
-				if {armor_upgrade.%event-player%} is "stone_sword":
-					set slot 11 of current inventory of player to ("chainmail chestplate of protection %{armor_upgrade_lvl.%event-player%}%" parsed as item) named "&l나무검 &d(+%{armor_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e갑옷 강화시" and "&l&e 강화비용 : %{price.chainmail_armor_upgrade}%"
-					if {armor_upgrade_lvl.%event-player%} < 5:
-						set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화단계 : 5단계 이상"
-
-					if {armor_upgrade_lvl.%event-player%} >= 5:
-						if 
-							set slot 15 of current inventory of player to iron chestplate named "&l다음갑옷으로 업그레이드" with lore "&l&e돌갑옷으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.wooden_armor_evolve}%"
-				if {armor_upgrade.%event-player%} is "stone_armor":
-					set slot 11 of current inventory of player to ("stone armor of sharpness %{next_armor_ench.%event-player%}%" parsed as item) named "&l돌갑옷 &d(+%{armor_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e갑옷 강화시" and "&l&e 강화비용 : %{price.stone_armor_upgrade_%{armor_upgrade_lvl.%event-player%}%}%"
-					if {armor_upgrade_lvl.%event-player%} < 5:
-						set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화단계 : 5단계 이상"
-					if {armor_upgrade_lvl.%event-player%} >= 5:
-						set slot 15 of current inventory of player to iron armor named "&l다음갑옷으로 업그레이드" with lore "&l&e철갑옷으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.stone_armor_evolve}%"
-				if {armor_upgrade.%event-player%} is "iron_armor":
-					set slot 11 of current inventory of player to ("iron armor of sharpness %{next_armor_ench.%event-player%}%" parsed as item) named "&l철갑옷 &d(+%{armor_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e갑옷 강화시" and "&l&e 강화비용 : %{price.iron_armor_upgrade_%{armor_upgrade_lvl.%event-player%}%}%"
-					if {armor_upgrade_lvl.%event-player%} < 5:
-						set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화단계 : 5단계 이상"
-					if {armor_upgrade_lvl.%event-player%} >= 5:
-						set slot 15 of current inventory of player to diamond armor named "&l다음갑옷으로 업그레이드" with lore "&l&e다이아갑옷으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.iron_armor_evolve}%"
-				if {armor_upgrade.%event-player%} is "diamond_armor":
-					set slot 11 of current inventory of player to ("diamond armor of sharpness %{next_armor_ench.%event-player%}%" parsed as item) named "&l다이아갑옷 &d(+%{armor_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e갑옷 강화시" and "&l&e 강화비용 : %{price.diamond_armor_upgrade_%{armor_upgrade_lvl.%event-player%}%}%"
-					if {armor_upgrade_lvl.%event-player%} < 5:
-						set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화단계 : 5단계 이상"
-					if {armor_upgrade_lvl.%event-player%} >= 5:
-						set slot 15 of current inventory of player to netherite armor named "&l다음갑옷으로 업그레이드" with lore "&l&e네더라이트갑옷으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.diamond_armor_evolve}%"
-				if {armor_upgrade.%event-player%} is "netherite_armor":
-					if {armor_upgrade_lvl.%event-player%} <= 5:
-						set slot 13 of current inventory of player to ("netherite armor of sharpness %{next_armor_ench.%event-player%}%" parsed as item) named "&l네더라이트갑옷 &d(+%{armor_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e갑옷 강화시" and "&l&e 강화비용 : %{price.netherite_armor_upgrade_%{armor_upgrade_lvl.%event-player%}%}%"
+				set slot 26 of current inventory of player to paper named "&l뒤로가기"
+				if {sword_upgrade.%event-player%} is "wooden_sword":
+					set slot 13 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화조건 : 돌검 이상"
+				if {sword_upgrade.%event-player%} is "stone_sword" or "iron_sword" or "diamond_sword" or "netherite_sword":
+					if {armor.%event-player%} is false:
+						set slot 13 of current inventory of player to chainmail chestplate named "&l갑옷 구매" with lore "&l&e비용 : %{price.armor}%"
+				if {armor.%event-player%} is true:
+					if {armor_upgrade.%event-player%} is "chainmail":
+						set slot 11 of current inventory of player to ("chainmail chestplate of protection %{next_armor_ench.%event-player%}%" parsed as item) named "&l갑옷강화" with lore "&l&e비용 : %{price.armor_upgrade}%"
+						if {sword_upgrade.%event-player%} is "iron_sword" or "diamond_sword" or "netherite_sword":
+							set slot 15 of current inventory of player to iron chestplate named "&l다음갑옷으로 업그레이드" with lore "&l&e철갑옷으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.chainmail_armor_evolve}%"
+						if {sword_upgrade.%event-player%} is "wooden_sword" or "stone_sword":
+							set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화조건 : 철검 이상"
+					if {armor_upgrade.%event-player%} is "iron":
+						set slot 11 of current inventory of player to ("iron chestplate of protection %{next_armor_ench.%event-player%}%" parsed as item) named "&l갑옷강화" with lore "&l&e비용 : %{price.armor_upgrade}%"
+						if {sword_upgrade.%event-player%} is "diamond_sword" or "netherite_sword":
+							set slot 15 of current inventory of player to diamond chestplate named "&l다음갑옷으로 업그레이드" with lore "&l&e철갑옷으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.iron_armor_evolve}%"
+						if {sword_upgrade.%event-player%} is "wooden_sword" or "stone_sword" or "iron_sword":
+							set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화조건 : 철검 이상"
+					if {armor_upgrade.%event-player%} is "diamond":
+						set slot 11 of current inventory of player to ("diamond chestplate of protection %{next_armor_ench.%event-player%}%" parsed as item) named "&l갑옷강화" with lore "&l&e비용 : %{price.armor_upgrade}%"
+						if {sword_upgrade.%event-player%} is "netherite_sword":
+							set slot 15 of current inventory of player to netherite chestplate named "&l다음갑옷으로 업그레이드" with lore "&l&e철갑옷으로 업그레이드 할수있습니다" and "&l&e비용 : %{price.diamond_armor_evolve}%"
+						if {sword_upgrade.%event-player%} is "wooden_sword" or "stone_sword" or "iron_sword" or "diamond_sword":
+							set slot 15 of current inventory of player to barrier named "&l아직 업그레이드 할 수 없습니다" with lore "&l&e필요 강화조건 : 철검 이상"
+					if {armor_upgrade.%event-player%} is "netherite":
+						set slot 13 of current inventory of player to ("netherite chestplate of protection %{next_armor_ench.%event-player%}%" parsed as item) named "&l갑옷강화" with lore "&l&e비용 : %{price.armor_upgrade}%"
 			if arg 1 is "sword":
 				set {sword_upgrade_lvl.%event-player%} to ("%{sword_upgrade_lvl.%event-player%}%" parsed as number)
 				set {next_sword_ench.%event-player%} to ("%{next_sword_ench.%event-player%}%" parsed as number)
 				open chest with 3 rows named "검 업그레이드 상점" to player
+				set slot 26 of current inventory of player to paper named "&l뒤로가기"
 				if {sword_upgrade.%event-player%} is "wooden_sword":
 					set slot 11 of current inventory of player to ("wooden sword of sharpness %{next_sword_ench.%event-player%}%" parsed as item) named "&l나무검 &d(+%{sword_upgrade_lvl.%event-player%} + 1%)" with lore "&l&e검 강화시" and "&l&e 강화비용 : %{price.wooden_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}%"
 					if {sword_upgrade_lvl.%event-player%} < 5:
@@ -150,12 +178,14 @@ command /shop [<text>]:
 			if arg 1 is "bow":
 				if {bool_bow.%event-player%} is false:
 					open chest with 3 rows named "활구매" to player
+					set slot 26 of current inventory of player to paper named "&l뒤로가기"
 					set slot 13 of current inventory of player to bow named "&l활 구매" with lore "&l&e비용 : %{price.bow}%"
 				if {bool_bow.%event-player%} is true:
 					set {pow_ench.%event-player%} to ("%{pow_ench.%event-player%}%" parsed as number)
 					set {ench_sample.%event-player%} to ("%{pow_ench.%event-player%} + 1%" parsed as number)
 					set {상점이용중.%event-player%} to true
 					open chest with 3 rows named "활 업그레이드 상점" to player
+					set slot 26 of current inventory of player to paper named "&l뒤로가기"
 					set slot 0,1,2,3,4,9,13,18,19,20,21 and 22 of current inventory of player to glass pane named " "
 					set slot 6,7,8,15,17,24,25 and 26 of current inventory of player to black stained glass pane named " "
 					if {pow_ench.%event-player%} is 0:
@@ -168,11 +198,13 @@ command /shop [<text>]:
 					set slot 14 of current inventory of player to anvil named "&l강화" with lore "&l&b강화비용 : %{price.bow_upgrade_%{pow_ench.%event-player%}%}%"
 			if arg 1 is "usable":
 				open chest with 3 rows named "&l소모품상점" to player
+				set slot 26 of current inventory of player to paper named "&l뒤로가기"
 				set slot 11 of current inventory of player to shiny water bottle named "&l물약" with lore "&l&e전투에 필요한 물약등을 구매할수 있습니다."
 				set slot 13 of current inventory of player to arrow named "&l화살" with lore "&l&e여러 종류의 화살을 구입할수 있습니다."
 				set slot 15 of current inventory of player to enchanted golden apple named "&l도구" with lore "&l&e전투에 도움이 되는 아이템들을 구매하실수 있습니다."
 			if arg 1 is "tool":
 				open chest with 5 rows named "도구상점" to player
+				set slot 44 of current inventory of player to paper named "&l뒤로가기"
 				set slot 10 of current inventory of player to enchanted golden apple named "&l보라색 황금사과" with lore "&l&e비용 : %{price.enchanted_golden_apple}%" and "&l&e구매재한 : %{buylimit.enchanted_golden_apple}%"
 				set slot 12 of current inventory of player to honey bottle named "&l꿀이든 병" with lore "&l&e비용 : %{price.honey_bottle}%"
 				set slot 14 of current inventory of player to milk bucket named "&l우유 양동이" with lore "&l&e비용 : %{price.milk_bucket}%"
@@ -185,25 +217,67 @@ command /shop [<text>]:
 				#화살을 클릭했을때
 				#상자열리면서 화살 11번 발광화살 13번 행운화살 15번 생성
 				open chest with 3 rows named "화살" to player
+				set slot 26 of current inventory of player to paper named "&l뒤로가기"
 				set slot 11 of current inventory of player to 16 arrow named "&l기본화살" with lore "&l&7평범한 화살입니다." and "&l&e비용 : %{price.arrow}%"
 				set slot 13 of current inventory of player to 10 spectral arrow named "&l발광화살" with lore "&l&e발광 화살입니다." and "&l&e비용 : %{price.spectral_arrow}%"
 				set slot 15 of current inventory of player to 14 tipped arrow of luck named "&l행운화살" with lore "&l&a행운의 화살입니다." and "&l&a사면 엄청난 행운이?..." and "&l&e비용 : %{price.tipped_arrow_of_luck}%"
 			if arg 1 is "potion":
 				#힘 상승 그대신 위더: 분노의 영약, 재생: 체력 물약, 흡수 그대신 구속: 강철의 영약, 신속 그대신 나약함: 속도의 물약
 				open chest with 5 rows named "물약" to player
+				set slot 44 of current inventory of player to paper named "&l뒤로가기"
 				set slot 10 of current inventory of player to potion of strength named "&l분노의 영약" with lore "&l&4분노의 영약입니다." and "&l&4공격력이 증가하지만" and "&l&8그에따른 대가(위더)를 받습니다" and "&l&b비용 : %{price.potion_of_strength}%"
 				set slot 12 of current inventory of player to potion of healing named "&l재생 물약" with lore "&l&d체력 물약입니다." and "&1&d체력을 재생할수있는 물약입니다" and "&l&b비용 : %{price.potion_of_health}%"
 				set slot 14 of current inventory of player to potion of fire resistance named "&l강철의 영약" with lore "&l&7강철의 영약입니다." and "&l&7흡수효과를 얻습니다" and "&l&8그러나 속도가 느려집니다." and "&l&b비용 : %{price.potion_of_fire_resistance}%"
 				set slot 16 of current inventory of player to potion of swiftness named "&l속도의 물약" with lore "&l&b속도의 물약입니다." and "&l&b속도가 빨라집니다" and "&l&8그러나 공격력이 낮아집니다." and "&l&b비용 : %{price.potion_of_swiftness}%"
 			if arg 1 is "stat":
 				open chest with 3 rows named "스탯 업그레이드" to player
+				set slot 26 of current inventory of player to paper named "&l뒤로가기"
 				set slot 11 of current inventory of player to apple named "&l&c체력" with lore "&l&a현재 체력 스텟 : %{stat_health.%event-player%}%" and "&l&e비용 : %{price.health_upgrade}%"
 				set slot 15 of current inventory of player to shiny iron sword named "&l&f힘" with lore "&l&a현재 힘 스텟 : %{stat_strength.%event-player%}%" and "&l&e비용 : %{price.strength_upgrade}%"
 		if arg 1 is not set:
 			execute player command "/상점"
 
+on rightclicking with nether star:
+	execute player command "/shop"
+	cancel event
+
+
 on inventory click:
+	if inventory name of current inventory of player contains "갑옷":
+		cancel event
+		if clicked item's name contains "뒤로가기":
+			close player's inventory
+			execute player command "/shop"
+			stop
+		if clicked item's name contains "갑옷 구매":
+			if {armor.%event-player%} is false:
+				execute player command "/upgradearmor"
+				stop
+		if clicked item's name contains "갑옷강화":
+			if {armor_upgrade.%event-player%} is "chainmail":
+				execute player command "/upgradearmor chainmail"
+				stop
+			if {armor_upgrade.%event-player%} is "iron":
+				execute player command "/upgradearmor iron"
+				stop
+			if {armor_upgrade.%event-player%} is "diamond":
+				execute player command "/upgradearmor diamond"
+				stop
+		if clicked item's name contains "다음갑옷으로":
+			if {armor_upgrade.%event-player%} is "chainmail":
+				execute player command "/evolvearmor chainmail_armor"
+				stop
+			if {armor_upgrade.%event-player%} is "iron":
+				execute player command "/evolvearmor iron_armor"
+				stop
+			if {armor_upgrade.%event-player%} is "diamond":
+				execute player command "/evolvearmor diamond_armor"
+				stop
 	if inventory name of current inventory of player contains "검":
+		if clicked item's name contains "뒤로가기":
+			close player's inventory
+			execute player command "/shop"
+			stop
 		cancel event
 		if clicked item's name contains "&l나무검":
 			execute player command "/upgradesword"
@@ -218,19 +292,25 @@ on inventory click:
 		if clicked item's name contains "다음검으로 업그레이드":
 			if {sword_upgrade.%event-player%} is "wooden_sword":
 				execute player command "/evolve wooden_sword"
+				stop
 			if {sword_upgrade.%event-player%} is "stone_sword":
 				execute player command "/evolve stone_sword"
+				stop
 			if {sword_upgrade.%event-player%} is "iron_sword":
 				execute player command "/evolve iron_sword"
+				stop
 			if {sword_upgrade.%event-player%} is "diamond_sword":
 				execute player command "/evolve diamond_sword"
-	if inventory name of current inventory of player contains "물약":
-		cancel event
+				stop
 	if inventory name of current inventory of player contains "도구":
+		if clicked item's name contains "뒤로가기":
+			close player's inventory
+			execute player command "/shop usable"
+			stop
 		if clicked item's name contains "앤더 진주":
 			cancel event
 			execute player command "/buy ender_pearl %event-player%"
-		if clicked item's name contains "보라색 황금사과 ":
+		if clicked item's name contains "보라색 황금사과":
 			cancel event
 			execute player command "/buy enchanted_golden_apple %event-player%"
 		if clicked item's name contains "일반 황금사과":
@@ -252,6 +332,11 @@ on inventory click:
 			cancel event
 			execute player command "/buy goat_horn %event-player%"
 	if inventory name of current inventory of player contains "화살":
+		if clicked item's name contains "뒤로가기":
+			cancel event
+			close player's inventory
+			execute player command "/shop usable"
+			stop
 		if clicked item's name contains "기본화살":
 			cancel event
 			execute player command "/buy arrow %event-player%"
@@ -263,24 +348,56 @@ on inventory click:
 			execute player command "/buy tipped_arrow %event-player%"
 	if inventory name of current inventory of player contains "메뉴":
 		cancel event
+	if inventory name of current inventory of player contains "물약":
+		cancel event
+		if clicked item's name contains "뒤로가기":
+			close player's inventory
+			execute player command "/shop usable"
+			stop
+		if clicked item's name contains "분노의 영약":
+			cancel event
+			execute player command "/buy potion_of_strength %event-player%"
+		if clicked item's name contains "재생 물약":
+			cancel event
+			execute player command "/buy potion_of_health %event-player%"
+		if clicked item's name contains "강철의 영약":
+			cancel event
+			execute player command "/buy potion_of_fire_resistance %event-player%"
+		if clicked item's name contains "속도의 물약":
+			cancel event
+			execute player command "/buy potion_of_swiftness %event-player%"
 	if inventory name of current inventory of player contains "소모품":
 		cancel event
 	if inventory name of current inventory of player contains "활구매":
 		cancel event
+		if clicked item's name contains "뒤로가기":
+			cancel event
+			close player's inventory
+			execute player command "/shop"
+			stop
 		if clicked item's name contains "활 구매":
 			execute player command "/upgradebow"
 	if inventory name of current inventory of player contains "스탯":
 		cancel event
+		if clicked item's name contains "뒤로가기":
+			cancel event
+			close player's inventory
+			execute player command "/shop"
+			stop
 		if clicked item's name contains "체력":
 			execute player command "/upgradestat health"
 		if clicked item's name contains "힘":
 			execute player command "/upgradestat strength"
 	if inventory name of current inventory of player contains "활 업그레이드 상점":
 		cancel event
+		if clicked item's name contains "뒤로가기":
+			cancel event
+			close player's inventory
+			execute player command "/shop"
+			stop
 		if clicked item's name contains "강화":
 			close player's inventory
 			execute player command "/upgradebow"
-
 
 
 
@@ -299,6 +416,9 @@ on inventory click:
 		if clicked item's name contains "검 업그레이드":
 			close player's inventory
 			execute player command "/shop sword"
+		if clicked item's name contains "갑옷 상점":
+			close player's inventory
+			execute player command "/shop armor"
 		if clicked item's name contains "활 업그레이드":
 			close player's inventory
 			execute player command "/shop bow"
@@ -312,6 +432,11 @@ on inventory click:
 on inventory click:
 	if name of current inventory of player contains "&l소모품상점":
 		cancel event
+		if clicked item's name contains "뒤로가기":
+			cancel event
+			close player's inventory
+			execute player command "/shop"
+			stop
 		if clicked item's name contains "&l물약":
 			close player's inventory
 			execute player command "/shop potion"
@@ -335,8 +460,10 @@ command /upgradebow:
 				message "&l&e구매하였습니다" to player
 				set {bool_bow.%event-player%} to true
 				execute player command "/shop bow"
+				stop
 			if {pvp돈.%event-player%} < {price.bow}:
 				message "&l&a돈이 부족합니다" to player
+				stop
 		if {bool_bow.%event-player%} is true:
 			if {pvp돈.%event-player%} >= {price.bow_upgrade_%{pow_ench.%event-player%}%}:
 				subtract {price.bow_upgrade_%{pow_ench.%event-player%}%} from {pvp돈.%event-player%}
@@ -346,8 +473,10 @@ command /upgradebow:
 				close event-player's inventory
 				message "&l&e업드레이드하였습니다" to player
 				execute player command "/shop bow"
+				stop
 			if {pvp돈.%event-player%} < {price.bow_upgrade_%{pow_ench.%event-player%}%}:
 				message "&l&a돈이 부족합니다" to player
+				stop
 
 
 
@@ -370,6 +499,7 @@ command /upgradesword:
 				stop
 			if {pvp돈.%event-player%} < {price.wooden_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
 				message "&l&a돈이 부족합니다" to player
+			stop
 		if {sword_upgrade.%event-player%} is "stone_sword":
 			if {pvp돈.%event-player%} >= {price.stone_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
 				subtract {price.stone_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%} from {pvp돈.%event-player%}
@@ -384,6 +514,7 @@ command /upgradesword:
 				stop
 			if {pvp돈.%event-player%} < {stone_price.sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
 				message "&l&a돈이 부족합니다" to player
+			stop
 		if {sword_upgrade.%event-player%} is "iron_sword":
 			if {pvp돈.%event-player%} >= {price.iron_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
 				subtract {price.iron_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%} from {pvp돈.%event-player%}
@@ -398,6 +529,7 @@ command /upgradesword:
 				stop
 			if {pvp돈.%event-player%} < {iron_price.sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
 				message "&l&a돈이 부족합니다" to player
+			stop
 		if {sword_upgrade.%event-player%} is "diamond_sword":
 			if {pvp돈.%event-player%} >= {price.diamond_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
 				subtract {price.diamond_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%} from {pvp돈.%event-player%}
@@ -412,6 +544,7 @@ command /upgradesword:
 				stop
 			if {pvp돈.%event-player%} < {diamond_price.sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
 				message "&l&a돈이 부족합니다" to player
+			stop
 		if {sword_upgrade.%event-player%} is "netherite_sword":
 			if {pvp돈.%event-player%} >= {price.netherite_sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
 				if {sword_upgrade_lvl.%event-player%} <= 5:
@@ -438,6 +571,7 @@ command /upgradesword:
 					stop
 			if {pvp돈.%event-player%} < {netherite_price.sword_upgrade_%{sword_upgrade_lvl.%event-player%}%}:
 				message "&l&a돈이 부족합니다" to player
+			stop
 
 
 command /upgradestat [<text>]:
@@ -475,30 +609,34 @@ command /evolve [<text>]:
 				execute console command "/execute as %event-player% at @s run playsound minecraft:block.anvil.use master @s ~ ~ ~ 1 1 1"
 				if {sword_upgrade.%event-player%} is "wooden_sword":
 					close player's inventory
+					set {sword_upgrade.%event-player%} to "stone_sword"
+					wait 0.2 seconds
 					execute player command "/shop sword"
 					message "검이 진화 하였습니다." to event-player
-					set {sword_upgrade.%event-player%} to "stone_sword"
 					execute console command "/give %event-player% stone_sword{Unbreakable:1b,Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
 					stop
 				if {sword_upgrade.%event-player%} is "stone_sword":
 					close player's inventory
+					set {sword_upgrade.%event-player%} to "iron_sword"
+					wait 0.2 seconds
 					execute player command "/shop sword"
 					message "검이 진화 하였습니다." to event-player
-					set {sword_upgrade.%event-player%} to "iron_sword"
 					execute console command "/give %event-player% iron_sword{Unbreakable:1b,Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
 					stop
 				if {sword_upgrade.%event-player%} is "iron_sword":
 					close player's inventory
+					set {sword_upgrade.%event-player%} to "diamond_sword"
+					wait 0.2 seconds
 					execute player command "/shop sword"
 					message "검이 진화 하였습니다." to event-player
-					set {sword_upgrade.%event-player%} to "diamond_sword"
 					execute console command "/give %event-player% diamond_sword{Unbreakable:1b,Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
 					stop
 				if {sword_upgrade.%event-player%} is "diamond_sword":
 					close player's inventory
+					set {sword_upgrade.%event-player%} to "netherite_sword"
+					wait 0.2 seconds
 					execute player command "/shop sword"
 					message "검이 진화 하였습니다." to event-player
-					set {sword_upgrade.%event-player%} to "netherite_sword"
 					execute console command "/give %event-player% netherite_sword{Unbreakable:1b,Enchantments:[{id:""minecraft:sharpness"",lvl:%{sword_ench.%event-player%}%s}]} 1"
 					stop
 			if {pvp돈.%event-player%} >= {price.%arg 1%_evolve}:
@@ -507,7 +645,80 @@ command /evolve [<text>]:
 
 
 
-every 0.1 seconds:
+command /evolvearmor [<text>]:
+	trigger:
+		if {pvp돈.%event-player%} >= {price.%arg 1%_evolve}:
+			subtract {price.%arg 1%_evolve} from {pvp돈.%event-player%}
+			if {armor_upgrade.%event-player%} is "chainmail":
+				close player's inventory
+				set {armor_upgrade.%event-player%} to "iron"
+				execute player command "/shop armor"
+				message "갑옷이 진화 하였습니다." to event-player
+				execute console command "/item replace entity %event-player% armor.head with minecraft:iron_helmet{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.legs with minecraft:iron_leggings{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.feet with minecraft:iron_boots{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.chest with minecraft:iron_chestplate{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				stop
+			if {armor_upgrade.%event-player%} is "iron":
+				close player's inventory
+				set {armor_upgrade.%event-player%} to "diamond"
+				execute player command "/shop armor"
+				message "갑옷이 진화 하였습니다." to event-player
+				execute console command "/item replace entity %event-player% armor.head with minecraft:diamond_helmet{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.legs with minecraft:diamond_leggings{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.feet with minecraft:diamond_boots{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.chest with minecraft:diamond_chestplate{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				stop
+			if {sword_upgrade.%event-player%} is "diamond":
+				close player's inventory
+				execute player command "/shop armor"
+				message "검이 진화 하였습니다." to event-player
+				set {sword_upgrade.%event-player%} to "netherite"
+				execute console command "/item replace entity %event-player% armor.head with minecraft:netherite_helmet{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.legs with minecraft:netherite_leggings{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.feet with minecraft:netherite_boots{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.chest with minecraft:netherite_chestplate{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				stop
+		if {pvp돈.%event-player%} >= {price.%arg 1%_evolve}:
+			message "돈이 부족합니다." to event-player  
+
+
+
+
+
+command /upgradearmor [<text>]:
+	trigger:
+		if {armor.%event-player%} is false:
+			if {pvp돈.%event-player%} >= {price.armor}:
+				subtract {price.armor} from {pvp돈.%event-player%}
+				execute console command "/item replace entity %event-player% armor.head with minecraft:chainmail_helmet{Unbreakable:1b} 1"
+				execute console command "/item replace entity %event-player% armor.legs with minecraft:chainmail_leggings{Unbreakable:1b} 1"
+				execute console command "/item replace entity %event-player% armor.feet with minecraft:chainmail_boots{Unbreakable:1b} 1"
+				execute console command "/item replace entity %event-player% armor.chest with minecraft:chainmail_chestplate{Unbreakable:1b} 1"
+				close event-player's inventory
+				message "&l&e구매하였습니다" to player
+				set {armor.%event-player%} to true
+				set {armor_upgrade.%event-player%} to "chainmail"
+				execute player command "/shop armor"
+				stop
+			if {pvp돈.%event-player%} < {price.armor}:
+				message "&l&a돈이 부족합니다" to player
+		if {armor.%event-player%} is true:
+			if {pvp돈.%event-player%} >= {price.armor_upgrade}:
+				subtract {price.armor_upgrade} from {pvp돈.%event-player%}
+				add 1 to {armor_ench.%event-player%}
+				execute console command "/item replace entity %event-player% armor.head with minecraft:%arg 1%_helmet{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.legs with minecraft:%arg 1%_leggings{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.feet with minecraft:%arg 1%_boots{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				execute console command "/item replace entity %event-player% armor.chest with minecraft:%arg 1%_chestplate{Unbreakable:1b,Enchantments:[{id:""minecraft:protection"",lvl:%{armor_ench.%event-player%}%s}]} 1"
+				close event-player's inventory
+				message "&l&e업드레이드하였습니다" to player
+				execute player command "/shop armor"
+				stop
+			if {pvp돈.%event-player%} < {price.armor_upgrade}:
+				message "&l&a돈이 부족합니다" to player
+
+every 0.3 seconds:
 	loop all players:
 		wipe loop-player's sidebar
 		set name of sidebar of loop-player to "점수판"
