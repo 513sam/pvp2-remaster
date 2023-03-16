@@ -46,9 +46,23 @@ command /pvp [<text>] [<text>] [<player>]:
 						set {sword_upgrade.%loop-player%} to "wooden_sword"
 						set {stat_health.%loop-player%} to 0
 						set {stat_strength.%loop-player%} to 0
-						set {scoreboard_output.%loop-player%} to false
-					set {price.health_upgrade} to 1500
-					set {price.strength_upgrade} to 15000
+						set {scoreboard.%loop-player%} to true
+						set {scoreboard_output.%loop-player%} to "활성화"
+						set {armor.%loop-player%} to false
+						set {armor_upgrade.%loop-player%} to "none"
+						set {armor_ench.%loop-player%} to 0
+					set {라운드} to 0
+					set {price.potion_of_strength} to 15000
+					set {price.potion_of_swiftness} to 15000
+					set {price.potion_of_health} to 15000
+					set {price.potion_of_fire_resistance} to 15000
+					set {price.armor_upgrade} to 70000
+					set {price.armor} to 50000
+					set {price.chainmail_armor_evolve} to 100000
+					set {price.iron_armor_evolve} to 200000
+					set {price.diamond_armor_evolve} to 400000
+					set {price.health_upgrade} to 2500
+					set {price.strength_upgrade} to 10000
 					set {buylimit.enchanted_golden_apple} to 5
 					set {게임진행} to false
 					set {pvp게임진행} to false
@@ -82,6 +96,7 @@ command /pvp [<text>] [<text>] [<player>]:
 						if {red.%arg 3%} is false:
 							execute console command "/clear %arg 3%"
 							execute console command "/give %arg 3% minecraft:wooden_sword{Unbreakable:1b} 1"
+							execute console command "/item replace entity %arg 3% hotbar.8 with minecraft:nether_star"
 							execute console command "/spawnpoint %arg 3% -8 4 -134"
 							execute console command "/tp %arg 3% -8 4 -134"
 							if {blue.%arg 3%} is true:
@@ -106,6 +121,7 @@ command /pvp [<text>] [<text>] [<player>]:
 						if {blue.%arg 3%} is false:
 							execute console command "/clear %arg 3%"
 							execute console command "/give %arg 3% minecraft:wooden_sword{Unbreakable:1b} 1"
+							execute console command "/item replace entity %arg 3% hotbar.8 with minecraft:nether_star"
 							execute console command "/spawnpoint %arg 3% -8 4 -61"
 							execute console command "/tp %arg 3% -8 4 -61"
 							if {red.%arg 3%} is false:
@@ -131,6 +147,7 @@ command /pvp [<text>] [<text>] [<player>]:
 						if {red.%player%} is false:
 							execute console command "/clear %player%"
 							execute console command "/give %player% minecraft:wooden_sword{Unbreakable:1b} 1"
+							execute console command "/item replace entity %player% hotbar.8 with minecraft:nether_star"
 							execute console command "/spawnpoint %player% -8 4 -134"
 							execute console command "/tp %player% -8 4 -134"
 							if {blue.%player%} is true:
@@ -155,6 +172,7 @@ command /pvp [<text>] [<text>] [<player>]:
 						if {blue.%player%} is false:
 							execute console command "/clear %player%"
 							execute console command "/give %player% minecraft:wooden_sword{Unbreakable:1b} 1"
+							execute console command "/item replace entity %player% hotbar.8 with minecraft:nether_star"
 							execute console command "/spawnpoint %player% -8 4 -61"
 							execute console command "/tp %player% -8 4 -61"
 							if {red.%player%} is true:
@@ -223,6 +241,7 @@ every 1 seconds:
 	if {게임진행} is true:
 		if {레드팀준비} is true:
 			if {블루팀준비} is true:
+				close inventory of all players
 				add 1 to {라운드}
 				loop all players:
 					set {준비.%loop-player%} to false
@@ -320,6 +339,16 @@ on death:
 						loop all players:
 							set {준비.%loop-player%} to false
 						stop
+command /블루팀준비:
+	trigger:
+		set {블루팀준비} to true
+		message "블루준비완료" to all players
+		stop
+command /레드팀준비:
+	trigger:
+		set {레드팀준비} to true
+		message "레드준비완료" to all players
+		stop
 
 
 
