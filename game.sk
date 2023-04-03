@@ -1,3 +1,25 @@
+
+#include <stdio.h>
+
+
+int main()
+{
+	int a,b;
+	scanf("%d %d",&a,&b);
+	printf("%d+%d=%d\n",a,b,a+b);
+	printf("%d-%d=%d\n",a,b,a-b);
+	printf("%d*%d=%d\n",a,b,a*b);
+	printf("%d/%d=%d",a,b,a/b);
+}
+
+
+
+
+
+
+
+
+
 every 0.5 seconds:
 	loop all players:
 		set {stat_health.%loop-player%} to ("%{stat_health.%loop-player%}%" parsed as number)
