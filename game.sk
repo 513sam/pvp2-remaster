@@ -1,4 +1,89 @@
+import requests
+import discord,random,asyncio,os
+from discord.ext import commands
+from datetime import datetime
+from bs4 import BeautifulSoup
+from datetime import datetime
 
+
+send_time='01:41' #time is in 24hr format
+message_channel_id='1098436462883635352'
+bot = commands.Bot(command_prefix='!',intents=discord.Intents.all())
+url = 'https://search.naver.com/search.naver?query=수리고등학교+급식'
+now = datetime.now()
+response = requests.get(url)
+bot_token = "MTA5ODQzNjc0MTY0OTY2NjA5OA.Gm9-XQ.8NCMzpZ46R68QOlF4nyj5_-T_0O6dAvwZF4qe4"
+date = now.weekday()
+date = date + 1
+meal_list = []
+def load_meal_list():
+    if response.status_code == 200:
+        html = response.text
+        soup = BeautifulSoup(html, 'html.parser')
+        if date == 1:
+            for i in range(1,10):
+                title = soup.select_one(f"div.timeline_list.open > ul > li:nth-child(1) > div > div > ul > li:nth-child({i}) > span.text")
+                if title == "None":
+                    break
+                meal_list.append(title[:title.rfind("\">")])
+        elif date == 2:
+            for i in range(1,10):
+                title = soup.select_one(f"div.timeline_list.open > ul > li:nth-child(2) > div > div > ul > li:nth-child({i}) > span.text")
+                if title == "None":
+                    break
+                meal_list.append(title[:title.rfind("\">")])
+        elif date == 3:
+            for i in range(1,10):
+                title = soup.select_one(f"div.timeline_list.open > ul > li:nth-child(3) > div > div > ul > li:nth-child({i}) > span.text")
+                if title == "None":
+                    break
+                meal_list.append(title[:title.rfind("\">")])
+        elif date == 4:
+            for i in range(1,10):
+                title = soup.select_one(f"div.timeline_list.open > ul > li:nth-child(4) > div > div > ul > li:nth-child({i}) > span.text")
+                if title == "None":
+                    break
+                meal_list.append(title[:title.rfind("\">")])
+        elif date == 5:
+            for i in range(1,10):
+                title = soup.select_one(f"div.timeline_list.open > ul > li:nth-child(5) > div > div > ul > li:nth-child({i}) > span.text")
+                if title == "None":
+                    break
+                meal_list.append(title[:title.rfind("&")])
+        else:
+            print("Invalid Date")
+
+    else : 
+        print(response.status_code)
+@bot.event
+async def on_ready():
+    print(f'Login bot: {bot.user}')
+
+async def time_check():
+    await bot.wait_until_ready()
+    message_channel=bot.get_channel(message_channel_id)
+    while not bot.is_closed:
+        now=datetime.strftime(datetime.now(),'%H:%M')
+        if now.hour() == 1 and now.minute() == 52:
+            message= 'a'
+            await message_channel.send(message)
+            time=90
+        else:
+            time=1
+        await asyncio.sleep(time)
+
+try:
+    bot.loop.create_task(time_check())
+except:
+    print("Tq")
+
+@bot.command()
+async def test(message):
+    for i in range(0,8):
+        await message.channel.send(meal_list[i])
+    
+load_meal_list()
+bot.run('MTA5ODQzNjc0MTY0OTY2NjA5OA.GV5pQM.A23CCQG0CBfX8JxkKHYv7dCgzlu0J3-r_6mn8U')
 
  1번
 #include <stdio.h>
